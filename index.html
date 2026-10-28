@@ -422,7 +422,7 @@
 
     <!-- ===================== MODUŁY 1–2: POGODA ===================== -->
     <h2 class="group-head" id="pogoda">Moduły 1 i 2: Pogoda</h2>
-    <p class="group-lead">Trzy razy budujesz tę samą małą aplikację, za każdym razem inną metodą pracy z agentem, i porównujesz wyniki. Nie liczy się, która aplikacja jest ładniejsza. Liczy się to, co każda metoda wyciągnęła na wierzch, a co przemilczała. Pracujesz w repozytorium <code>pogoda-start</code>, nie w backendzie <span data-brand>Lumio</span>.</p>
+    <p class="group-lead">Trzy razy budujesz tę samą małą aplikację, za każdym razem inną metodą pracy z agentem, i porównujesz wyniki. Nie liczy się, która aplikacja jest ładniejsza. Liczy się to, co każda metoda wyciągnęła na wierzch, a co przemilczała. Pracujesz w repozytorium <code>pogoda-start</code>: to kopia backendu i symulatora <span data-brand>Lumio</span>, w której możesz zmieniać wszystko, także telewizor.</p>
 
     <!-- ===================== 1a ===================== -->
     <section class="ex" id="ex-1a" data-i="10" data-group="Moduły 1–2: Pogoda" data-short="1a" data-title="Vibe coding">
@@ -435,26 +435,29 @@
 
       <div class="doc">
         <div class="doc-bar"><span>Opis zadania (ten sam w 1a i 1b)</span><button type="button" class="copy" data-copy="brief-1">Kopiuj</button></div>
-        <div class="prose" id="brief-1">Zbuduj aplikację Pogoda. Backend ma dostarczać informacje o aktualnej pogodzie w Warszawie, a telewizor ma je wyświetlać. Telewizor to strona w przeglądarce udająca ekran TV. Sposób wyświetlania jest dowolny.
+        <div class="prose" id="brief-1">W katalogu aplikacji telewizora Lumio jest aplikacja Pogoda, ale po jej otwarciu telewizor pokazuje tylko nazwę. Zrób tak, żeby pokazywała aktualną pogodę w Warszawie. Dane ma dostarczać backend. Sposób wyświetlania jest dowolny.
 
 Dane pobieraj z Open-Meteo (https://open-meteo.com/), które nie wymaga klucza API.</div>
       </div>
-      <p class="note"><b>Stack wybierasz sam.</b> Jeśli nie masz preferencji, najmniej kłopotów sprawia coś, co nie wymaga instalowania pakietów, na przykład Python z biblioteką standardową. <b>Sieć blokuje Open-Meteo?</b> Użyj danych wpisanych na stałe i zaznacz to w notatkach.</p>
+      <p class="note"><b>W tym repozytorium zmieniasz wszystko:</b> backend w <code>backend/</code> i telewizor w <code>tv/</code>. <b>Sieć blokuje Open-Meteo?</b> Użyj danych wpisanych na stałe i zaznacz to w notatkach.</p>
 
       <h3>Przygotowanie</h3>
       <div class="only-cloud">
         <ul class="steps">
           <li><label><input type="checkbox"><span>Otwórz <a data-repo-pogoda href="#" target="_blank" rel="noopener">repozytorium pogoda-start</a>, wybierz <b>Fork</b> i utwórz własną kopię na swoim koncie GitHub.</span></label></li>
-          <li><label><input type="checkbox"><span>W Claude Desktop otwórz zakładkę <b>Code</b>, w wyborze środowiska wybierz <b>Cloud</b> i wskaż swoją kopię repozytorium.</span></label></li>
-          <li><label><input type="checkbox"><span>Zapytaj agenta: <code>Jakie skille są w tym repozytorium?</code> Na liście powinny być <code data-skill="grilling"></code> i <code data-skill="grill"></code>.</span></label></li>
+          <li><label><input type="checkbox"><span>W Claude Desktop otwórz zakładkę <b>Code</b>, w wyborze środowiska wybierz <b>Cloud</b> i wskaż swoją kopię repozytorium.<span class="hint">Jeśli to Twoja pierwsza sesja w chmurze, aplikacja poprosi o połączenie z GitHubem i utworzenie środowiska. Zostaw ustawienia domyślne.</span></span></label></li>
+          <li><label><input type="checkbox"><span>Sprawdź skille. Zapytaj agenta: <code>Jakie skille są w tym repozytorium?</code> Na liście powinny być m.in. <code data-skill="grilling"></code>, <code data-skill="grill"></code> i <code data-skill="check"></code>.</span></label></li>
+          <li class="required"><label><input type="checkbox"><span>Uruchom <code data-skill="check"></code>.<span class="req">Wymagane</span><span class="hint">Zacznij zadania dopiero, gdy raport kończy się linią „Środowisko gotowe.”</span></span></label></li>
         </ul>
-        <p class="note"><b>W chmurze nie otworzysz telewizora we własnej przeglądarce.</b> Poproś agenta, żeby uruchomił backend i pokazał odpowiedź endpointu oraz to, co wyświetli ekran TV. Jeśli możesz, zrób zadania 1a–1c lokalnie: wystarczy git, agent i Python albo Node.</p>
+        <p class="note"><b>W chmurze nie otworzysz telewizora we własnej przeglądarce.</b> Poproś agenta, żeby uruchomił serwer i pokazał odpowiedź endpointu oraz to, co wyświetli ekran TV. Jeśli możesz, zrób zadania 1a–1c lokalnie.</p>
       </div>
       <div class="only-local">
         <ul class="steps">
-          <li><label><input type="checkbox"><span>Sklonuj <a data-repo-pogoda href="#" target="_blank" rel="noopener">repozytorium pogoda-start</a> albo rozpakuj ZIP od trenera.<span class="hint">ZIP od trenera zawiera katalog <code>.git</code> i tag <code>start</code>. ZIP z przycisku „Download ZIP” na GitHubie ich nie ma.</span></span></label></li>
-          <li><label><input type="checkbox"><span>Sprawdź tag startowy: <code>git tag</code> wypisuje <code>start</code>.</span></label></li>
-          <li><label><input type="checkbox"><span>Otwórz agenta (Claude Code albo Cline) w katalogu repozytorium i wpisz <code>/</code>. Na liście powinny być <code data-skill="grilling"></code> i <code data-skill="grill"></code>.</span></label></li>
+          <li><label><input type="checkbox"><span>Sklonuj <a data-repo-pogoda href="#" target="_blank" rel="noopener">repozytorium pogoda-start</a> albo rozpakuj ZIP od trenera.<span class="hint">ZIP od trenera zawiera katalog <code>.git</code> i tag <code>start</code>. ZIP z przycisku „Download ZIP” na GitHubie ich nie ma. Na Windowsie przed rozpakowaniem: prawy klik na ZIP, Właściwości, zaznacz „Odblokuj”.</span></span></label></li>
+          <li><label><input type="checkbox"><span>Sprawdź Pythona w terminalu. Wystarczy, że jedno z poleceń pokaże wersję 3.9 lub nowszą: <code>python3 --version</code>, <code>python --version</code> albo na Windowsie <code>py --version</code>.<span class="hint">Żadne nie działa? Zainstaluj <a href="#portable-python">przenośnego Pythona</a> według instrukcji z przygotowania do modułu 3, tylko w katalogu <code>pogoda-start</code>.</span></span></label></li>
+          <li><label><input type="checkbox"><span>Otwórz agenta (Claude Code albo Cline) w katalogu repozytorium i wpisz <code>/</code>. Na liście powinny być m.in. <code data-skill="grilling"></code>, <code data-skill="grill"></code> i <code data-skill="check"></code>.</span></label></li>
+          <li class="required"><label><input type="checkbox"><span>Uruchom <code data-skill="check"></code>.<span class="req">Wymagane</span><span class="hint">Agent sprawdzi Pythona, gita i tag <code>start</code>, skille, testy i serwer telewizora. Zacznij zadania dopiero, gdy raport kończy się linią „Środowisko gotowe.”</span></span></label></li>
+          <li><label><input type="checkbox"><span>Uruchom serwer: <code>run_server.bat</code> albo <code>./run_server.sh</code>, potem otwórz <a href="http://localhost:8765/tv/?device=TV-001" target="_blank" rel="noopener">localhost:8765/tv/?device=TV-001</a> i otwórz na telewizorze aplikację Pogoda.</span></label></li>
         </ul>
       </div>
 
@@ -467,7 +470,7 @@ Dane pobieraj z Open-Meteo (https://open-meteo.com/), które nie wymaga klucza A
       <textarea data-note="log-1a" aria-label="Dziennik poprawek w zadaniu 1a" placeholder="Na przykład: 3. poprawka, agent pokazywał temperaturę w Fahrenheitach…"></textarea>
       <span class="saved" data-saved="log-1a"></span>
       <ul class="steps">
-        <li><label><input type="checkbox"><span>Telewizor pokazuje aktualną pogodę w Warszawie pobraną z Twojego backendu.</span></label></li>
+        <li><label><input type="checkbox"><span>Po otwarciu aplikacji Pogoda telewizor pokazuje aktualną pogodę w Warszawie pobraną z backendu.</span></label></li>
         <li><label><input type="checkbox"><span>Zacommituj wszystko na gałęzi <code>vibe</code>.<span class="hint only-local"><code>git add -A</code>, potem <code>git commit</code>.</span><span class="hint only-cloud">Poproś agenta o commit i pokazanie <code>git log --oneline</code>.</span></span></label></li>
       </ul>
 
@@ -510,7 +513,7 @@ Dane pobieraj z Open-Meteo (https://open-meteo.com/), które nie wymaga klucza A
         <div class="howto-body">
           <div class="doc">
             <div class="doc-bar"><span>Wiadomość od trenera</span></div>
-            <div class="prose"><b>Twoje telewizory są już u klientów.</b> Kod strony TV został wgrany do urządzeń i nie da się go zaktualizować. Od tej chwili pliki telewizora są zamrożone: możesz zmieniać tylko backend.
+            <div class="prose"><b>Twoje telewizory są już u klientów.</b> Kod telewizora z <code>tv/</code> został wgrany do urządzeń i nie da się go zaktualizować. Od tej chwili <code>tv/</code> jest zamrożony: możesz zmieniać tylko backend.
 
 <b>Nowe wymaganie:</b> telewizor ma pokazywać także prognozę na jutro.</div>
           </div>
@@ -520,9 +523,9 @@ Dane pobieraj z Open-Meteo (https://open-meteo.com/), które nie wymaga klucza A
 git tag grill-wdrozone grill</pre></span></label></li>
             <li><label><input type="checkbox"><span>Na gałęzi <code>vibe</code> dodaj prognozę na jutro, zmieniając tylko backend. Najwyżej 10 minut.</span></label></li>
             <li><label><input type="checkbox"><span>To samo na gałęzi <code>grill</code>. Też najwyżej 10 minut.</span></label></li>
-            <li><label><input type="checkbox"><span>Sprawdź, że pliki telewizora się nie zmieniły. Wynik musi być pusty:
-              <pre class="snippet">git diff vibe-wdrozone vibe --stat -- &lt;pliki telewizora&gt;
-git diff grill-wdrozone grill --stat -- &lt;pliki telewizora&gt;</pre>
+            <li><label><input type="checkbox"><span>Sprawdź, że telewizor się nie zmienił. Wynik musi być pusty:
+              <pre class="snippet">git diff vibe-wdrozone vibe --stat -- tv/
+git diff grill-wdrozone grill --stat -- tv/</pre>
               <span class="hint only-cloud">Poproś agenta o te polecenia i pokazanie wyniku.</span></span></label></li>
             <li><label><input type="checkbox"><span>Nie dało się bez zmiany telewizora? To też jest wynik. Zapisz poniżej, czego zabrakło w kontrakcie między backendem a TV, żeby się dało.</span></label></li>
           </ul>
@@ -583,18 +586,18 @@ git diff grill-wdrozone grill --stat -- &lt;pliki telewizora&gt;</pre>
         <span class="ex-progress" data-progress></span>
       </div>
       <p class="goal">Cel: trzecia wersja, w której słownik pojęć i decyzje zostają zapisane w repozytorium, a nie tylko w Twojej głowie i w historii czatu.</p>
-      <p>Domyślnie budujesz Pogodę jeszcze raz, ale tym razem ze wszystkimi wymaganiami od początku, łącznie z tymi ze zwrotu akcji. Jeśli wolisz własną małą aplikację z tym samym podziałem (backend i ekran TV), uzgodnij to z trenerem. Inaczej kolumna <code>docs</code> w porównaniu nie będzie porównywalna.</p>
+      <p>Domyślnie budujesz Pogodę jeszcze raz, ale tym razem ze wszystkimi wymaganiami od początku, łącznie z tymi ze zwrotu akcji. Jeśli wolisz inną aplikację z katalogu telewizora albo zupełnie nową, uzgodnij to z trenerem. Inaczej kolumna <code>docs</code> w porównaniu nie będzie porównywalna.</p>
 
       <details class="howto">
         <summary>Opis zadania z pełnymi wymaganiami (otwórz po zwrocie akcji)</summary>
         <div class="howto-body">
           <div class="doc">
             <div class="doc-bar"><span>Opis zadania 1c</span><button type="button" class="copy" data-copy="brief-1c">Kopiuj</button></div>
-            <div class="prose" id="brief-1c">Zbuduj aplikację Pogoda. Backend ma dostarczać informacje o pogodzie w Warszawie, a telewizor ma je wyświetlać. Telewizor to strona w przeglądarce udająca ekran TV. Dane pobieraj z Open-Meteo (https://open-meteo.com/), które nie wymaga klucza API.
+            <div class="prose" id="brief-1c">W katalogu aplikacji telewizora Lumio jest aplikacja Pogoda, ale po jej otwarciu telewizor pokazuje tylko nazwę. Zrób tak, żeby pokazywała pogodę w Warszawie. Dane ma dostarczać backend, który pobiera je z Open-Meteo (https://open-meteo.com/), bez klucza API.
 
 Wymagania:
 - Telewizor pokazuje aktualną pogodę i prognozę na jutro.
-- Po pierwszym wdrożeniu kodu telewizora nie da się już aktualizować. Każda późniejsza zmiana musi być po stronie backendu.
+- Po pierwszym wdrożeniu kodu telewizora (tv/) nie da się już aktualizować. Każda późniejsza zmiana musi być po stronie backendu.
 - Telewizorów jest 10 000, każdy odświeża dane co minutę. Darmowy limit Open-Meteo to 10 000 zapytań dziennie.</div>
           </div>
         </div>
@@ -618,7 +621,7 @@ Wymagania:
         <li><label><input type="checkbox"><span>Po wywiadzie przeczytaj <code>CONTEXT.md</code> i ADR-y. Czy zgadzają się z tym, co ustaliliście? Popraw je, zanim powstanie kod.</span></label></li>
         <li><label><input type="checkbox"><span>Uruchom <code data-skill="spec"></code> i przeczytaj specyfikację. Opcjonalnie podziel ją na tickety przez <code data-skill="tickets"></code>.</span></label></li>
         <li><label><input type="checkbox"><span>Implementuj małymi krokami, na przykład przez <code data-skill="implement"></code>: zmiana, sprawdzenie, diff, commit.</span></label></li>
-        <li><label><input type="checkbox"><span>Sprawdź kontrakt. Oznacz stan wdrożony (<code>git tag docs-wdrozone docs</code>) i dodaj prognozę na pojutrze, zmieniając tylko backend. Potem <code>git diff docs-wdrozone docs --stat -- &lt;pliki telewizora&gt;</code> ma dać pusty wynik.</span></label></li>
+        <li><label><input type="checkbox"><span>Sprawdź kontrakt. Oznacz stan wdrożony (<code>git tag docs-wdrozone docs</code>) i dodaj prognozę na pojutrze, zmieniając tylko backend. Potem <code>git diff docs-wdrozone docs --stat -- tv/</code> ma dać pusty wynik.</span></label></li>
         <li><label><input type="checkbox"><span>Uzupełnij kolumnę <code>docs</code> w <a href="#ex-1b">porównaniu w zadaniu 1b</a>.</span></label></li>
       </ul>
       <p class="note"><b>Do oddania:</b> <code>CONTEXT.md</code> i co najmniej dwa ADR-y, działająca aplikacja na gałęzi <code>docs</code> i uzupełniona kolumna <code>docs</code> w porównaniu.</p>
