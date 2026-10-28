@@ -424,6 +424,76 @@
     <h2 class="group-head" id="pogoda">Moduły 1 i 2: Pogoda</h2>
     <p class="group-lead">Trzy razy budujesz tę samą małą aplikację, za każdym razem inną metodą pracy z agentem, i porównujesz wyniki. Nie liczy się, która aplikacja jest ładniejsza. Liczy się to, co każda metoda wyciągnęła na wierzch, a co przemilczała. Pracujesz w repozytorium <code>pogoda-start</code>: to kopia backendu i symulatora <span data-brand>Lumio</span>, w której możesz zmieniać wszystko, także telewizor.</p>
 
+    <!-- ===================== START 1–2 ===================== -->
+    <section class="ex" id="start-pogoda" data-group="Moduły 1–2: Pogoda" data-i="0" data-short="Start" data-title="Przygotowanie">
+      <div class="ex-head">
+        <span class="ex-num">0</span>
+        <h2>Przygotowanie</h2>
+        <span class="ex-progress" data-progress></span>
+      </div>
+      <p class="goal">Cel: repozytorium <code>pogoda-start</code> działa, agent widzi skille i potrafi uruchomić testy, a <code data-skill="check"></code> potwierdza, że środowisko jest gotowe.</p>
+
+      <h3>Zasady pracy w tych modułach</h3>
+      <ul class="rules">
+        <li><b>Każda wersja na osobnej gałęzi od <code>start</code>.</b> Dzięki temu na końcu porównasz wszystkie trzy.</li>
+        <li><b>Commit przed przejściem do kolejnego zadania.</b> Inaczej niezacommitowane zmiany przejdą na następną gałąź.</li>
+        <li><b>Nowa sesja agenta na każde zadanie.</b> W porównaniu ma się liczyć metoda pracy, nie to, co agent pamięta z poprzedniej wersji.</li>
+        <li><b>Notuj na bieżąco.</b> Poprawki i zaskoczenia zapisuj od razu, po fakcie szybko się zacierają.</li>
+      </ul>
+
+      <h3>Kroki</h3>
+      <div class="only-cloud">
+        <ul class="steps">
+          <li><label><input type="checkbox"><span>Otwórz <a data-repo-pogoda href="#" target="_blank" rel="noopener">repozytorium pogoda-start</a>, wybierz <b>Fork</b> i utwórz własną kopię na swoim koncie GitHub.</span></label></li>
+          <li><label><input type="checkbox"><span>W Claude Desktop otwórz zakładkę <b>Code</b>, w wyborze środowiska wybierz <b>Cloud</b> i wskaż swoją kopię repozytorium.<span class="hint">Jeśli to Twoja pierwsza sesja w chmurze, aplikacja poprosi o połączenie z GitHubem i utworzenie środowiska. Zostaw ustawienia domyślne.</span></span></label></li>
+          <li><label><input type="checkbox"><span>Sprawdź skille. Zapytaj agenta: <code>Jakie skille są w tym repozytorium?</code> Na liście powinny być m.in. <code data-skill="grilling"></code>, <code data-skill="grill"></code> i <code data-skill="check"></code>.</span></label></li>
+          <li class="required"><label><input type="checkbox"><span>Uruchom <code data-skill="check"></code>.<span class="req">Wymagane</span><span class="hint">Agent sprawdzi Pythona, gita i tag <code>start</code>, skille i testy. Zacznij zadania dopiero, gdy raport kończy się linią „Środowisko gotowe.”</span></span></label></li>
+        </ul>
+        <p class="note">Tag <code>start</code> to punkt wyjścia każdej wersji. Nową gałąź tworzysz poleceniem <code>git switch -c &lt;gałąź&gt; start</code>. Nie używaj <code>git reset --hard start</code>, bo stracisz wersję, którą chcesz porównać.</p>
+        <p class="note"><b>Nie widzisz skilla na liście podpowiedzi?</b> Claude Desktop ukrywa skille wywoływane ręcznie, ale działają. Wpisz komendę w całości, na przykład <code data-skill="grill"></code>.</p>
+        <p class="note"><b>W chmurze nie masz własnego terminala ani przeglądarki z telewizorem.</b> Polecenia gita zlecasz agentowi. Poproś go też, żeby uruchomił serwer i pokazał odpowiedź endpointu oraz to, co wyświetli ekran TV. Jeśli możesz, zrób zadania 1a–1c lokalnie.</p>
+      </div>
+      <div class="only-local">
+        <ul class="steps">
+          <li><label><input type="checkbox"><span>Sklonuj <a data-repo-pogoda href="#" target="_blank" rel="noopener">repozytorium pogoda-start</a> albo rozpakuj ZIP od trenera.<span class="hint">Na Windowsie przed rozpakowaniem: prawy klik na ZIP, Właściwości, zaznacz „Odblokuj”. ZIP z przycisku „Download ZIP” na GitHubie nie ma historii ani tagu <code>start</code>.</span></span></label></li>
+          <li><label><input type="checkbox"><span>Sprawdź Pythona w terminalu. Wystarczy, że jedno z poleceń pokaże wersję 3.9 lub nowszą: <code>python3 --version</code>, <code>python --version</code> albo na Windowsie <code>py --version</code>.<span class="hint">Żadne nie działa albo otwiera się Microsoft Store? Zainstaluj przenośnego Pythona według instrukcji pod listą kroków.</span></span></label></li>
+          <li><label><input type="checkbox"><span>Otwórz agenta (Claude Code albo Cline) w katalogu repozytorium.</span></label></li>
+          <li><label><input type="checkbox"><span>Sprawdź skille. Wpisz <code>/</code> i zobacz listę podpowiedzi albo zapytaj agenta: <code>Jakie skille są w tym repozytorium?</code> Na liście powinny być m.in. <code data-skill="grilling"></code>, <code data-skill="grill"></code> i <code data-skill="check"></code>.</span></label></li>
+          <li class="required"><label><input type="checkbox"><span>Uruchom <code data-skill="check"></code>.<span class="req">Wymagane</span><span class="hint">Agent sprawdzi Pythona, gita i tag <code>start</code>, skille, testy, dane do zadań i serwer telewizora. Zacznij zadania dopiero, gdy raport kończy się linią „Środowisko gotowe.”</span></span></label></li>
+          <li><label><input type="checkbox"><span>Uruchom serwer: <code>run_server.bat</code> albo <code>./run_server.sh</code>, potem otwórz <a href="http://localhost:8765/tv/?device=TV-001" target="_blank" rel="noopener">localhost:8765/tv/?device=TV-001</a>. Na telewizorze otwórz aplikację Pogoda: na razie pokazuje tylko swoją nazwę.</span></label></li>
+        </ul>
+        <p class="note">Tag <code>start</code> to punkt wyjścia każdej wersji: <code>git switch -c &lt;gałąź&gt; start</code>. Nie używaj <code>git reset --hard start</code>, bo stracisz wersję, którą chcesz porównać.</p>
+        <details class="howto" id="portable-python-pogoda">
+          <summary>Nie masz Pythona? Instalacja przenośnej wersji na Windowsie</summary>
+          <div class="howto-body">
+            <p>Przenośny Python nie wymaga instalatora ani uprawnień administratora. Rozpakowujesz go do folderu w repozytorium i od razu działa. Na macOS i Linuksie Python zwykle jest w systemie; jeśli go nie ma, napisz do trenera.</p>
+            <ol>
+              <li>Pobierz <a href="https://www.python.org/ftp/python/3.15.2/python-3.15.2-embed-amd64.zip" target="_blank" rel="noopener">Python 3.15.2, Windows embeddable package (64-bit)</a>. Na laptopie z procesorem ARM (np. Snapdragon) wybierz wersję ARM64 ze <a href="https://www.python.org/downloads/windows/" target="_blank" rel="noopener">strony pobierania Pythona dla Windows</a>.</li>
+              <li>Odblokuj pobrany plik: prawy klik na ZIP, Właściwości, zaznacz „Odblokuj”, OK. Jeśli tej opcji nie ma, przejdź dalej.</li>
+              <li>Rozpakuj zawartość do folderu <code>python</code> w katalogu repozytorium, tak żeby plik leżał tutaj: <code>&lt;repozytorium&gt;\python\python.exe</code>. Git ten folder pomija.</li>
+              <li>Uruchom w agencie <code data-skill="check"></code>. Skill znajdzie rozpakowanego Pythona, także gdy wylądował w dodatkowym podfolderze, i zaproponuje przeniesienie go na miejsce oraz konfigurację. Każdą zmianę zatwierdzasz. Jeśli raport pokaże „Python: ✅”, pozostałe kroki możesz pominąć.</li>
+              <li>Konfiguracja ręczna, jeśli wolisz zrobić to sam: otwórz w Notatniku plik <code>python\python315._pth</code>, dopisz na końcu linię z dwiema kropkami i zapisz. Dzięki temu Python widzi kod repozytorium. Plik ma wyglądać tak:
+                <pre class="snippet">python315.zip
+.
+# Uncomment to run site.main() automatically
+#import site
+..</pre>
+              </li>
+              <li>Po konfiguracji ręcznej sprawdź w terminalu, w katalogu repozytorium:
+                <pre class="snippet">.\python\python.exe --version
+.\python\python.exe -c "import unittest, json; print('ok')"</pre>
+                Pierwsze polecenie pokaże wersję, drugie wypisze <code>ok</code>.</li>
+              <li>Zmiennej PATH nie musisz zmieniać. <code>run_tests.bat</code> i <code>run_server.bat</code> same znajdą Pythona w folderze <code>python</code>, a <code data-skill="check"></code> też go wykryje.</li>
+            </ol>
+            <p>W paczce nie ma pip ani IDLE. Do zadań nie są potrzebne.</p>
+            <p><b>Windows blokuje <code>python.exe</code>?</b> Jeśli SmartScreen lub antywirus nie pozwala go uruchomić, napisz do trenera na czacie szkolenia. Przejdziesz wtedy na pracę w chmurze.</p>
+            <p>Więcej o tej paczce: <a href="https://docs.python.org/3/using/windows.html" target="_blank" rel="noopener">dokumentacja Pythona dla Windows</a>.</p>
+          </div>
+        </details>
+        <p class="note"><b>Coś nie działa?</b> Wklej trenerowi na czacie szkolenia raport z <code data-skill="check"></code> albo komunikat błędu. Nie trać czasu na walkę ze środowiskiem.</p>
+      </div>
+    </section>
+
     <!-- ===================== 1a ===================== -->
     <section class="ex" id="ex-1a" data-i="10" data-group="Moduły 1–2: Pogoda" data-short="1a" data-title="Vibe coding">
       <div class="ex-head">
@@ -440,26 +510,6 @@
 Dane pobieraj z Open-Meteo (https://open-meteo.com/), które nie wymaga klucza API.</div>
       </div>
       <p class="note"><b>W tym repozytorium zmieniasz wszystko:</b> backend w <code>backend/</code> i telewizor w <code>tv/</code>. <b>Sieć blokuje Open-Meteo?</b> Użyj danych wpisanych na stałe i zaznacz to w notatkach.</p>
-
-      <h3>Przygotowanie</h3>
-      <div class="only-cloud">
-        <ul class="steps">
-          <li><label><input type="checkbox"><span>Otwórz <a data-repo-pogoda href="#" target="_blank" rel="noopener">repozytorium pogoda-start</a>, wybierz <b>Fork</b> i utwórz własną kopię na swoim koncie GitHub.</span></label></li>
-          <li><label><input type="checkbox"><span>W Claude Desktop otwórz zakładkę <b>Code</b>, w wyborze środowiska wybierz <b>Cloud</b> i wskaż swoją kopię repozytorium.<span class="hint">Jeśli to Twoja pierwsza sesja w chmurze, aplikacja poprosi o połączenie z GitHubem i utworzenie środowiska. Zostaw ustawienia domyślne.</span></span></label></li>
-          <li><label><input type="checkbox"><span>Sprawdź skille. Zapytaj agenta: <code>Jakie skille są w tym repozytorium?</code> Na liście powinny być m.in. <code data-skill="grilling"></code>, <code data-skill="grill"></code> i <code data-skill="check"></code>.</span></label></li>
-          <li class="required"><label><input type="checkbox"><span>Uruchom <code data-skill="check"></code>.<span class="req">Wymagane</span><span class="hint">Zacznij zadania dopiero, gdy raport kończy się linią „Środowisko gotowe.”</span></span></label></li>
-        </ul>
-        <p class="note"><b>W chmurze nie otworzysz telewizora we własnej przeglądarce.</b> Poproś agenta, żeby uruchomił serwer i pokazał odpowiedź endpointu oraz to, co wyświetli ekran TV. Jeśli możesz, zrób zadania 1a–1c lokalnie.</p>
-      </div>
-      <div class="only-local">
-        <ul class="steps">
-          <li><label><input type="checkbox"><span>Sklonuj <a data-repo-pogoda href="#" target="_blank" rel="noopener">repozytorium pogoda-start</a> albo rozpakuj ZIP od trenera.<span class="hint">ZIP od trenera zawiera katalog <code>.git</code> i tag <code>start</code>. ZIP z przycisku „Download ZIP” na GitHubie ich nie ma. Na Windowsie przed rozpakowaniem: prawy klik na ZIP, Właściwości, zaznacz „Odblokuj”.</span></span></label></li>
-          <li><label><input type="checkbox"><span>Sprawdź Pythona w terminalu. Wystarczy, że jedno z poleceń pokaże wersję 3.9 lub nowszą: <code>python3 --version</code>, <code>python --version</code> albo na Windowsie <code>py --version</code>.<span class="hint">Żadne nie działa? Zainstaluj <a href="#portable-python">przenośnego Pythona</a> według instrukcji z przygotowania do modułu 3, tylko w katalogu <code>pogoda-start</code>.</span></span></label></li>
-          <li><label><input type="checkbox"><span>Otwórz agenta (Claude Code albo Cline) w katalogu repozytorium i wpisz <code>/</code>. Na liście powinny być m.in. <code data-skill="grilling"></code>, <code data-skill="grill"></code> i <code data-skill="check"></code>.</span></label></li>
-          <li class="required"><label><input type="checkbox"><span>Uruchom <code data-skill="check"></code>.<span class="req">Wymagane</span><span class="hint">Agent sprawdzi Pythona, gita i tag <code>start</code>, skille, testy i serwer telewizora. Zacznij zadania dopiero, gdy raport kończy się linią „Środowisko gotowe.”</span></span></label></li>
-          <li><label><input type="checkbox"><span>Uruchom serwer: <code>run_server.bat</code> albo <code>./run_server.sh</code>, potem otwórz <a href="http://localhost:8765/tv/?device=TV-001" target="_blank" rel="noopener">localhost:8765/tv/?device=TV-001</a> i otwórz na telewizorze aplikację Pogoda.</span></label></li>
-        </ul>
-      </div>
 
       <h3>Kroki</h3>
       <ul class="steps">
