@@ -1,0 +1,1541 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zadania: moduły 1–3, 5 i 6</title>
+<style>
+  :root {
+    --bg: #EDF0F4;
+    --surface: #FFFFFF;
+    --ink: #18202D;
+    --muted: #5B6578;
+    --line: #D2D8E1;
+    --accent: #2B55D6;
+    --accent-ink: #FFFFFF;
+    --note-bg: #E7ECF8;
+    --code-bg: #E9EDF3;
+    --bar-off: #D9DEE6;
+    --c0: #CDB52E;
+    --c1: #35AFC0;
+    --c2: #45A057;
+    --c3: #B5469C;
+    --c4: #CF4646;
+    --c5: #3355CC;
+    --c6: #D9772B;
+    --c7: #6B4FC8;
+    --c8: #2F8F83;
+    --c9: #8E9A2A;
+    --c10: #D9578F;
+    --c11: #5F7A96;
+    --c12: #A8692C;
+    --font-head: "Bahnschrift", "DIN Alternate", "Roboto Condensed", "Arial Narrow", system-ui, sans-serif;
+    --font-body: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    --font-code: "Cascadia Code", "SF Mono", Consolas, "Liberation Mono", ui-monospace, monospace;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #121822;
+      --surface: #1A2231;
+      --ink: #E4E8EF;
+      --muted: #98A3B5;
+      --line: #2B3547;
+      --accent: #7E9DFF;
+      --accent-ink: #0F1522;
+      --note-bg: #1E2A44;
+      --code-bg: #222C3D;
+      --bar-off: #283244;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #121822;
+    --surface: #1A2231;
+    --ink: #E4E8EF;
+    --muted: #98A3B5;
+    --line: #2B3547;
+    --accent: #7E9DFF;
+    --accent-ink: #0F1522;
+    --note-bg: #1E2A44;
+    --code-bg: #222C3D;
+    --bar-off: #283244;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.6 var(--font-body);
+    -webkit-text-size-adjust: 100%;
+  }
+  a { color: var(--accent); }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+  code, pre, kbd { font-family: var(--font-code); font-size: 0.88em; }
+  code { background: var(--code-bg); padding: 0.1em 0.35em; border-radius: 4px; }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 48px 24px 32px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 40px;
+    align-items: end;
+  }
+  .hero h1 {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: clamp(2.2rem, 5vw, 3.4rem);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    margin: 0 0 12px;
+  }
+  .hero .sub { font-size: 1.15rem; color: var(--muted); margin: 0 0 20px; }
+  .hero .story { max-width: 62ch; margin: 0; }
+
+  .bars-wrap { display: flex; flex-direction: column; gap: 10px; }
+  .bars {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    height: 150px;
+    align-items: end;
+  }
+  .bar {
+    position: relative;
+    height: 100%;
+    background: var(--bar-off);
+    border-radius: 3px;
+    overflow: hidden;
+    text-decoration: none;
+  }
+  .bar .fill {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 0%;
+    transition: height 0.45s cubic-bezier(.2,.7,.2,1);
+  }
+  .bar[data-i="0"] .fill { background: var(--c0); }
+  .bar[data-i="1"] .fill { background: var(--c1); }
+  .bar[data-i="2"] .fill { background: var(--c2); }
+  .bar[data-i="3"] .fill { background: var(--c3); }
+  .bar[data-i="4"] .fill { background: var(--c4); }
+  .bar[data-i="5"] .fill { background: var(--c5); }
+  .bar[data-i="6"] .fill { background: var(--c6); }
+  .bar[data-i="7"] .fill { background: var(--c7); }
+  .bar[data-i="8"] .fill { background: var(--c8); }
+  .bar[data-i="9"] .fill { background: var(--c9); }
+  .bar[data-i="10"] .fill { background: var(--c10); }
+  .bar[data-i="11"] .fill { background: var(--c11); }
+  .bar[data-i="12"] .fill { background: var(--c12); }
+  .bar-labels {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    font-family: var(--font-head);
+    font-size: 0.95rem;
+    text-align: center;
+    color: var(--muted);
+  }
+  .total { font-family: var(--font-head); font-size: 1.05rem; margin: 0; }
+  .total strong { font-size: 1.5rem; font-weight: 600; }
+
+  /* ---------- Layout ---------- */
+  .layout {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+    display: grid;
+    grid-template-columns: 230px minmax(0, 1fr);
+    gap: 40px;
+  }
+  nav.toc {
+    position: sticky;
+    top: 16px;
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .toc ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+  .toc a {
+    display: grid;
+    grid-template-columns: 10px 1fr auto;
+    gap: 10px;
+    align-items: center;
+    padding: 7px 10px;
+    border-radius: 6px;
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 0.95rem;
+  }
+  .toc a:hover { background: var(--surface); }
+  .toc .sw { width: 10px; height: 22px; border-radius: 2px; }
+  .toc .count { color: var(--muted); font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+  .toc a.done .count { color: var(--ink); font-weight: 600; }
+
+  .path-pick { border: 0; margin: 0; padding: 0; }
+  .path-pick legend { font-size: 0.85rem; color: var(--muted); margin-bottom: 6px; padding: 0; }
+  .seg { display: grid; grid-template-columns: 1fr 1fr; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 3px; }
+  .seg input { position: absolute; opacity: 0; pointer-events: none; }
+  .seg label { text-align: center; padding: 6px 4px; border-radius: 6px; cursor: pointer; font-size: 0.9rem; }
+  .seg input:checked + label { background: var(--accent); color: var(--accent-ink); }
+  .seg input:focus-visible + label { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+  .reset {
+    background: none; border: 1px solid var(--line); color: var(--muted);
+    border-radius: 6px; padding: 6px 10px; font: inherit; font-size: 0.85rem; cursor: pointer;
+  }
+  .reset:hover { color: var(--ink); border-color: var(--muted); }
+
+  /* ---------- Content ---------- */
+  main { min-width: 0; }
+  section.ex {
+    background: var(--surface);
+    border-radius: 10px;
+    padding: 0 32px 28px;
+    margin-bottom: 28px;
+    border-top: 6px solid var(--c, var(--accent));
+    scroll-margin-top: 16px;
+  }
+  section.ex[data-i="0"] { --c: var(--c0); }
+  section.ex[data-i="1"] { --c: var(--c1); }
+  section.ex[data-i="2"] { --c: var(--c2); }
+  section.ex[data-i="3"] { --c: var(--c3); }
+  section.ex[data-i="4"] { --c: var(--c4); }
+  section.ex[data-i="5"] { --c: var(--c5); }
+  section.ex[data-i="6"] { --c: var(--c6); }
+  section.ex[data-i="7"] { --c: var(--c7); }
+  section.ex[data-i="8"] { --c: var(--c8); }
+  section.ex[data-i="9"] { --c: var(--c9); }
+  section.ex[data-i="10"] { --c: var(--c10); }
+  section.ex[data-i="11"] { --c: var(--c11); }
+  section.ex[data-i="12"] { --c: var(--c12); }
+  .group-head { font-family: var(--font-head); font-weight: 600; font-size: 1.9rem; line-height: 1.1; margin: 44px 0 6px; }
+  .group-lead { color: var(--muted); margin: 0 0 20px; max-width: 72ch; }
+  .toc li.toc-group { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; padding: 12px 10px 4px; }
+  .toc li.toc-group:first-child { padding-top: 0; }
+  .ex-head { display: flex; align-items: baseline; gap: 16px; padding-top: 24px; flex-wrap: wrap; }
+  .ex-num {
+    font-family: var(--font-head);
+    font-size: 2.6rem;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--c);
+  }
+  .ex h2 {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 1.6rem;
+    line-height: 1.15;
+    margin: 0;
+    flex: 1 1 260px;
+  }
+  .ex-progress { font-size: 0.9rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .ex h3 { font-family: var(--font-head); font-weight: 600; font-size: 1.15rem; margin: 28px 0 8px; }
+  .ex p, .ex li { max-width: 72ch; }
+  .goal { font-size: 1.05rem; margin: 12px 0 0; }
+
+  .rules { margin: 8px 0 0; padding-left: 1.2em; }
+  .rules li { margin-bottom: 6px; }
+
+  ul.steps { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+  ul.steps li { margin: 0; }
+  ul.steps label {
+    display: grid;
+    grid-template-columns: 22px 1fr;
+    gap: 12px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  ul.steps label:hover { background: var(--bg); }
+  ul.steps input[type="checkbox"] {
+    width: 20px; height: 20px; margin: 2px 0 0;
+    accent-color: var(--c);
+    cursor: pointer;
+  }
+  ul.steps input:checked + span { color: var(--muted); }
+  .hint { display: block; font-size: 0.9rem; color: var(--muted); margin-top: 2px; }
+  ul.steps li.required > label { background: var(--note-bg); }
+  .req {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 0 8px;
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--bg);
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.6;
+    vertical-align: 1px;
+  }
+
+  .note {
+    background: var(--note-bg);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 10px 0;
+    font-size: 0.95rem;
+  }
+  .note b { font-weight: 600; }
+  body[data-path="cloud"] .only-local { display: none; }
+  body[data-path="local"] .only-cloud { display: none; }
+
+  .doc {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    margin: 12px 0;
+    overflow: hidden;
+  }
+  .doc-bar {
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    padding: 8px 12px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+  .doc pre {
+    margin: 0;
+    padding: 16px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-size: 0.86rem;
+    line-height: 1.55;
+    overflow-x: auto;
+  }
+  .doc .prose { padding: 16px 18px; white-space: pre-wrap; }
+  .copy {
+    background: var(--surface); color: var(--ink);
+    border: 1px solid var(--line); border-radius: 6px;
+    padding: 4px 10px; font: inherit; font-size: 0.85rem; cursor: pointer; white-space: nowrap;
+  }
+  .copy:hover { border-color: var(--muted); }
+  .copy.ok { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+  textarea {
+    width: 100%;
+    min-height: 96px;
+    margin-top: 8px;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--ink);
+    font: inherit;
+    font-size: 0.95rem;
+    resize: vertical;
+  }
+  .saved { font-size: 0.8rem; color: var(--muted); }
+
+  .cmp-wrap { overflow-x: auto; margin: 12px 0; }
+  table.cmp { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 0.92rem; }
+  .cmp th, .cmp td { border-top: 1px solid var(--line); padding: 6px; vertical-align: top; text-align: left; }
+  .cmp thead th { border-top: 0; font-family: var(--font-head); font-weight: 600; font-size: 1rem; }
+  .cmp tbody th { font-weight: 400; width: 34%; padding-top: 10px; }
+  .cmp textarea { min-height: 52px; margin: 0; padding: 6px 8px; font-size: 0.9rem; }
+
+  details.howto {
+    margin: 14px 0 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+  }
+  details.howto > summary {
+    cursor: pointer;
+    padding: 12px 16px;
+    font-weight: 600;
+  }
+  details.howto[open] > summary { border-bottom: 1px solid var(--line); }
+  .howto-body { padding: 4px 18px 14px; }
+  .howto-body ol { padding-left: 1.3em; margin: 10px 0; }
+  .howto-body li { margin-bottom: 10px; }
+  pre.snippet {
+    margin: 8px 0 4px;
+    padding: 10px 12px;
+    background: var(--code-bg);
+    border-radius: 6px;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-x: auto;
+  }
+  details.after { margin-top: 22px; border-top: 1px solid var(--line); padding-top: 14px; }
+  details.after summary { cursor: pointer; font-family: var(--font-head); font-weight: 600; font-size: 1.05rem; }
+  details.after ul { margin: 10px 0 0; padding-left: 1.2em; }
+
+  footer { max-width: 1180px; margin: 0 auto; padding: 0 24px 48px; color: var(--muted); font-size: 0.9rem; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; gap: 28px; padding: 32px 16px 24px; }
+    .bars { height: 90px; }
+    .layout { grid-template-columns: 1fr; padding: 0 16px 60px; gap: 20px; }
+    nav.toc { position: static; }
+    .toc ol { display: grid; grid-template-columns: 1fr 1fr; }
+    section.ex { padding: 0 18px 22px; }
+    footer { padding: 0 16px 40px; }
+  }
+  @media (max-width: 560px) {
+    .toc ol { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body data-path="cloud">
+
+<header class="hero">
+  <div>
+    <h1>Kod z agentem, pod kontrolą</h1>
+    <p class="sub">Moduły 1 i 2: rozgrzewka, trzy sposoby pracy z agentem<br>Moduł 3: generowanie, refaktoryzacja i debugowanie kodu z AI<br>Moduły 5 i 6: integracje przez Model Context Protocol</p>
+    <p class="story">Dołączasz do zespołu backendu <span data-brand>Lumio</span> TV. Nasze telewizory stoją w milionach domów i każdego dnia pytają serwer o aktualizacje firmware'u i o katalog aplikacji. Ty odpowiadasz za ten serwer. Na rozgrzewkę zbudujesz aplikację Pogoda na telewizor, trzy razy i za każdym razem inną metodą. Potem zrobisz z agentem serię zadań na backendzie i za każdym razem to Ty decydujesz, co trafia do kodu, a w modułach 5 i 6 także do czego agent ma dostęp.</p>
+  </div>
+  <div class="bars-wrap" aria-label="Postęp w module">
+    <div class="bars" id="bars"></div>
+    <div class="bar-labels" id="barLabels"></div>
+    <p class="total"><strong id="totalDone">0</strong> z <span id="totalAll">0</span> kroków</p>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc" aria-label="Spis zadań">
+    <ol id="toc"></ol>
+    <fieldset class="path-pick">
+      <legend>Gdzie pracujesz?</legend>
+      <div class="seg">
+        <input type="radio" name="path" id="path-cloud" value="cloud" checked>
+        <label for="path-cloud">W chmurze</label>
+        <input type="radio" name="path" id="path-local" value="local">
+        <label for="path-local">Lokalnie</label>
+      </div>
+    </fieldset>
+    <div><button type="button" class="reset" id="reset">Wyczyść mój postęp</button></div>
+  </nav>
+
+  <main>
+
+    <!-- ===================== MODUŁY 1–2: POGODA ===================== -->
+    <h2 class="group-head" id="pogoda">Moduły 1 i 2: Pogoda</h2>
+    <p class="group-lead">Trzy razy budujesz tę samą małą aplikację, za każdym razem inną metodą pracy z agentem, i porównujesz wyniki. Nie liczy się, która aplikacja jest ładniejsza. Liczy się to, co każda metoda wyciągnęła na wierzch, a co przemilczała. Pracujesz w repozytorium <code>pogoda-start</code>, nie w backendzie <span data-brand>Lumio</span>.</p>
+
+    <!-- ===================== 1a ===================== -->
+    <section class="ex" id="ex-1a" data-i="10" data-group="Moduły 1–2: Pogoda" data-short="1a" data-title="Vibe coding">
+      <div class="ex-head">
+        <span class="ex-num">1a</span>
+        <h2>Vibe coding</h2>
+        <span class="ex-progress" data-progress></span>
+      </div>
+      <p class="goal">Cel: zbudować działającą aplikację bez planu i bez skilli, a potem zauważyć, które decyzje agent podjął za Ciebie.</p>
+
+      <div class="doc">
+        <div class="doc-bar"><span>Opis zadania (ten sam w 1a i 1b)</span><button type="button" class="copy" data-copy="brief-1">Kopiuj</button></div>
+        <div class="prose" id="brief-1">Zbuduj aplikację Pogoda. Backend ma dostarczać informacje o aktualnej pogodzie w Warszawie, a telewizor ma je wyświetlać. Telewizor to strona w przeglądarce udająca ekran TV. Sposób wyświetlania jest dowolny.
+
+Dane pobieraj z Open-Meteo (https://open-meteo.com/), które nie wymaga klucza API.</div>
+      </div>
+      <p class="note"><b>Stack wybierasz sam.</b> Jeśli nie masz preferencji, najmniej kłopotów sprawia coś, co nie wymaga instalowania pakietów, na przykład Python z biblioteką standardową. <b>Sieć blokuje Open-Meteo?</b> Użyj danych wpisanych na stałe i zaznacz to w notatkach.</p>
+
+      <h3>Przygotowanie</h3>
+      <div class="only-cloud">
+        <ul class="steps">
+          <li><label><input type="checkbox"><span>Otwórz <a data-repo-pogoda href="#" target="_blank" rel="noopener">repozytorium pogoda-start</a>, wybierz <b>Fork</b> i utwórz własną kopię na swoim koncie GitHub.</span></label></li>
+          <li><label><input type="checkbox"><span>W Claude Desktop otwórz zakładkę <b>Code</b>, w wyborze środowiska wybierz <b>Cloud</b> i wskaż swoją kopię repozytorium.</span></label></li>
+          <li><label><input type="checkbox"><span>Zapytaj agenta: <code>Jakie skille są w tym repozytorium?</code> Na liście powinny być <code data-skill="grilling"></code> i <code data-skill="grill"></code>.</span></label></li>
+        </ul>
+        <p class="note"><b>W chmurze nie otworzysz telewizora we własnej przeglądarce.</b> Poproś agenta, żeby uruchomił backend i pokazał odpowiedź endpointu oraz to, co wyświetli ekran TV. Jeśli możesz, zrób zadania 1a–1c lokalnie: wystarczy git, agent i Python albo Node.</p>
+      </div>
+      <div class="only-local">
+        <ul class="steps">
+          <li><label><input type="checkbox"><span>Sklonuj <a data-repo-pogoda href="#" target="_blank" rel="noopener">repozytorium pogoda-start</a> albo rozpakuj ZIP od trenera.<span class="hint">ZIP od trenera zawiera katalog <code>.git</code> i tag <code>start</code>. ZIP z przycisku „Download ZIP” na GitHubie ich nie ma.</span></span></label></li>
+          <li><label><input type="checkbox"><span>Sprawdź tag startowy: <code>git tag</code> wypisuje <code>start</code>.</span></label></li>
+          <li><label><input type="checkbox"><span>Otwórz agenta (Claude Code albo Cline) w katalogu repozytorium i wpisz <code>/</code>. Na liście powinny być <code data-skill="grilling"></code> i <code data-skill="grill"></code>.</span></label></li>
+        </ul>
+      </div>
+
+      <h3>Kroki</h3>
+      <ul class="steps">
+        <li><label><input type="checkbox"><span>Utwórz gałąź od tagu <code>start</code>: <code>git switch -c vibe start</code>.<span class="hint only-cloud">Poproś o to agenta.</span></span></label></li>
+        <li><label><input type="checkbox"><span>Nowa sesja agenta. Wklej opis zadania. Nie używaj skilli i nie planuj z góry: po prostu buduj i poprawiaj, aż zadziała.</span></label></li>
+        <li><label><input type="checkbox"><span>W trakcie zapisuj poniżej każdą poprawkę, którą musiałeś zlecić, i każde zaskoczenie: co agent zrobił inaczej, niż się spodziewałeś.</span></label></li>
+      </ul>
+      <textarea data-note="log-1a" aria-label="Dziennik poprawek w zadaniu 1a" placeholder="Na przykład: 3. poprawka, agent pokazywał temperaturę w Fahrenheitach…"></textarea>
+      <span class="saved" data-saved="log-1a"></span>
+      <ul class="steps">
+        <li><label><input type="checkbox"><span>Telewizor pokazuje aktualną pogodę w Warszawie pobraną z Twojego backendu.</span></label></li>
+        <li><label><input type="checkbox"><span>Zacommituj wszystko na gałęzi <code>vibe</code>.<span class="hint only-local"><code>git add -A</code>, potem <code>git commit</code>.</span><span class="hint only-cloud">Poproś agenta o commit i pokazanie <code>git log --oneline</code>.</span></span></label></li>
+      </ul>
+
+      <details class="after">
+        <summary>Po zadaniu: do przemyślenia</summary>
+        <ul>
+          <li>Które decyzje podjąłeś Ty, a które agent bez pytania? Na przykład jednostki, odświeżanie, wygląd, obsługa błędów.</li>
+          <li>Ile czasu zajęło dojście do „działa”, a ile poprawki po drodze?</li>
+        </ul>
+      </details>
+    </section>
+
+    <!-- ===================== 1b ===================== -->
+    <section class="ex" id="ex-1b" data-i="11" data-group="Moduły 1–2: Pogoda" data-short="1b" data-title="Grilling">
+      <div class="ex-head">
+        <span class="ex-num">1b</span>
+        <h2>Ta sama aplikacja po sesji grilling</h2>
+        <span class="ex-progress" data-progress></span>
+      </div>
+      <p class="goal">Cel: zbudować tę samą aplikację, ale najpierw przejść wywiad z agentem. Zobaczysz, ile decyzji z 1a zapadło po cichu.</p>
+
+      <h3>Kroki</h3>
+      <ul class="steps">
+        <li><label><input type="checkbox"><span>Utwórz nową gałąź od startu, nie od <code>vibe</code>: <code>git switch -c grill start</code>.<span class="hint">Najpierw upewnij się, że wszystko z 1a jest zacommitowane na <code>vibe</code>.</span></span></label></li>
+        <li><label><input type="checkbox"><span>Nowa sesja agenta. Uruchom <code data-skill="grilling"></code> i wklej ten sam opis zadania co w 1a, bez zmian.</span></label></li>
+        <li><label><input type="checkbox"><span>Odpowiadaj na pytania, aż agent uzna, że rozumiecie się w pełni. Nie przyspieszaj. Jeśli nie znasz odpowiedzi, przyjmij rekomendację agenta, ale świadomie.</span></label></li>
+        <li><label><input type="checkbox"><span>Zapisz poniżej pytania z wywiadu, o których sam byś nie pomyślał.</span></label></li>
+      </ul>
+      <textarea data-note="questions-1b" aria-label="Pytania z grillingu, o których sam bym nie pomyślał" placeholder="Na przykład: co ma pokazać TV, gdy backend nie odpowiada?"></textarea>
+      <span class="saved" data-saved="questions-1b"></span>
+      <ul class="steps">
+        <li><label><input type="checkbox"><span>Dopiero po wywiadzie poproś o implementację.</span></label></li>
+        <li><label><input type="checkbox"><span>Aplikacja działa i jest zacommitowana na gałęzi <code>grill</code>.</span></label></li>
+      </ul>
+
+      <h3>Zwrot akcji</h3>
+      <p>Trener ogłosi go, gdy większość osób będzie miała gotowe obie wersje. Jeśli przeczytasz go wcześniej, porównanie straci sens.</p>
+      <details class="howto">
+        <summary>Zwrot akcji: otwórz dopiero na sygnał trenera</summary>
+        <div class="howto-body">
+          <div class="doc">
+            <div class="doc-bar"><span>Wiadomość od trenera</span></div>
+            <div class="prose"><b>Twoje telewizory są już u klientów.</b> Kod strony TV został wgrany do urządzeń i nie da się go zaktualizować. Od tej chwili pliki telewizora są zamrożone: możesz zmieniać tylko backend.
+
+<b>Nowe wymaganie:</b> telewizor ma pokazywać także prognozę na jutro.</div>
+          </div>
+          <ul class="steps">
+            <li><label><input type="checkbox"><span>Oznacz stan „wdrożony u klientów” na obu gałęziach:
+              <pre class="snippet">git tag vibe-wdrozone vibe
+git tag grill-wdrozone grill</pre></span></label></li>
+            <li><label><input type="checkbox"><span>Na gałęzi <code>vibe</code> dodaj prognozę na jutro, zmieniając tylko backend. Najwyżej 10 minut.</span></label></li>
+            <li><label><input type="checkbox"><span>To samo na gałęzi <code>grill</code>. Też najwyżej 10 minut.</span></label></li>
+            <li><label><input type="checkbox"><span>Sprawdź, że pliki telewizora się nie zmieniły. Wynik musi być pusty:
+              <pre class="snippet">git diff vibe-wdrozone vibe --stat -- &lt;pliki telewizora&gt;
+git diff grill-wdrozone grill --stat -- &lt;pliki telewizora&gt;</pre>
+              <span class="hint only-cloud">Poproś agenta o te polecenia i pokazanie wyniku.</span></span></label></li>
+            <li><label><input type="checkbox"><span>Nie dało się bez zmiany telewizora? To też jest wynik. Zapisz poniżej, czego zabrakło w kontrakcie między backendem a TV, żeby się dało.</span></label></li>
+          </ul>
+          <textarea data-note="twist-1b" aria-label="Wynik zwrotu akcji" placeholder="vibe: … / grill: …"></textarea>
+          <span class="saved" data-saved="twist-1b"></span>
+          <p class="note"><b>Dla szybszych.</b> Drugi zwrot: telewizorów jest 10 000, każdy odświeża dane co minutę, a darmowy limit Open-Meteo to 10 000 zapytań dziennie. Co musi się zmienić i gdzie?</p>
+        </div>
+      </details>
+
+      <h3>Porównanie</h3>
+      <p>Wypełnij po zwrocie akcji. Kolumnę <code>docs</code> uzupełnisz po zadaniu 1c.</p>
+      <div class="cmp-wrap">
+        <table class="cmp">
+          <thead><tr><th scope="col">Pytanie</th><th scope="col">vibe</th><th scope="col">grill</th><th scope="col">docs</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Ile razy poprawiałeś agenta w trakcie budowy?</th>
+              <td><textarea data-note="cmp-01-vibe" aria-label="vibe: liczba poprawek"></textarea></td><td><textarea data-note="cmp-01-grill" aria-label="grill: liczba poprawek"></textarea></td><td><textarea data-note="cmp-01-docs" aria-label="docs: liczba poprawek"></textarea></td></tr>
+            <tr><th scope="row">Kto zdecydował o jednostkach i formacie (°C, wiatr, opis czy ikona)? Ty czy agent po cichu?</th>
+              <td><textarea data-note="cmp-02-vibe" aria-label="vibe: jednostki i format"></textarea></td><td><textarea data-note="cmp-02-grill" aria-label="grill: jednostki i format"></textarea></td><td><textarea data-note="cmp-02-docs" aria-label="docs: jednostki i format"></textarea></td></tr>
+            <tr><th scope="row">Co pokazuje TV, gdy Open-Meteo nie odpowiada albo zwraca błąd?</th>
+              <td><textarea data-note="cmp-03-vibe" aria-label="vibe: błąd źródła danych"></textarea></td><td><textarea data-note="cmp-03-grill" aria-label="grill: błąd źródła danych"></textarea></td><td><textarea data-note="cmp-03-docs" aria-label="docs: błąd źródła danych"></textarea></td></tr>
+            <tr><th scope="row">Jak często dane są odświeżane? Czy backend coś cache'uje?</th>
+              <td><textarea data-note="cmp-04-vibe" aria-label="vibe: odświeżanie i cache"></textarea></td><td><textarea data-note="cmp-04-grill" aria-label="grill: odświeżanie i cache"></textarea></td><td><textarea data-note="cmp-04-docs" aria-label="docs: odświeżanie i cache"></textarea></td></tr>
+            <tr><th scope="row">Kontrakt backend ↔ TV w dwóch zdaniach: endpoint, pola, typy.</th>
+              <td><textarea data-note="cmp-05-vibe" aria-label="vibe: kontrakt"></textarea></td><td><textarea data-note="cmp-05-grill" aria-label="grill: kontrakt"></textarea></td><td><textarea data-note="cmp-05-docs" aria-label="docs: kontrakt"></textarea></td></tr>
+            <tr><th scope="row">Kto formatuje dane do wyświetlenia: backend czy TV?</th>
+              <td><textarea data-note="cmp-06-vibe" aria-label="vibe: formatowanie"></textarea></td><td><textarea data-note="cmp-06-grill" aria-label="grill: formatowanie"></textarea></td><td><textarea data-note="cmp-06-docs" aria-label="docs: formatowanie"></textarea></td></tr>
+            <tr><th scope="row">Czy ekran da się przeczytać z kanapy, z 3 metrów?</th>
+              <td><textarea data-note="cmp-07-vibe" aria-label="vibe: czytelność"></textarea></td><td><textarea data-note="cmp-07-grill" aria-label="grill: czytelność"></textarea></td><td><textarea data-note="cmp-07-docs" aria-label="docs: czytelność"></textarea></td></tr>
+            <tr><th scope="row">Czy są testy? Czego dotyczą?</th>
+              <td><textarea data-note="cmp-08-vibe" aria-label="vibe: testy"></textarea></td><td><textarea data-note="cmp-08-grill" aria-label="grill: testy"></textarea></td><td><textarea data-note="cmp-08-docs" aria-label="docs: testy"></textarea></td></tr>
+            <tr><th scope="row">Zwrot akcji: udało się bez zmiany TV? Ile to trwało?</th>
+              <td><textarea data-note="cmp-09-vibe" aria-label="vibe: zwrot akcji"></textarea></td><td><textarea data-note="cmp-09-grill" aria-label="grill: zwrot akcji"></textarea></td><td><textarea data-note="cmp-09-docs" aria-label="docs: zwrot akcji"></textarea></td></tr>
+            <tr><th scope="row">Ile decyzji z tej tabeli jest zapisanych gdzieś poza kodem?</th>
+              <td><textarea data-note="cmp-10-vibe" aria-label="vibe: zapisane decyzje"></textarea></td><td><textarea data-note="cmp-10-grill" aria-label="grill: zapisane decyzje"></textarea></td><td><textarea data-note="cmp-10-docs" aria-label="docs: zapisane decyzje"></textarea></td></tr>
+            <tr><th scope="row"><code>git diff start &lt;gałąź&gt; --stat</code>: ile plików i linii?</th>
+              <td><textarea data-note="cmp-11-vibe" aria-label="vibe: rozmiar zmian"></textarea></td><td><textarea data-note="cmp-11-grill" aria-label="grill: rozmiar zmian"></textarea></td><td><textarea data-note="cmp-11-docs" aria-label="docs: rozmiar zmian"></textarea></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">Wpisy w tabeli zapisują się w tej przeglądarce, tak jak pozostałe notatki.</p>
+
+      <details class="after">
+        <summary>Po zadaniu: do przemyślenia</summary>
+        <ul>
+          <li>Jaka jedna decyzja najbardziej różni <code>vibe</code> od <code>grill</code>?</li>
+          <li>Które pytanie z grillingu najbardziej przydało się przy zwrocie akcji?</li>
+          <li>Kiedy vibe coding w zupełności wystarcza?</li>
+        </ul>
+      </details>
+    </section>
+
+    <!-- ===================== 1c ===================== -->
+    <section class="ex" id="ex-1c" data-i="12" data-group="Moduły 1–2: Pogoda" data-short="1c" data-title="Grill with docs">
+      <div class="ex-head">
+        <span class="ex-num">1c</span>
+        <h2>Grill with docs</h2>
+        <span class="ex-progress" data-progress></span>
+      </div>
+      <p class="goal">Cel: trzecia wersja, w której słownik pojęć i decyzje zostają zapisane w repozytorium, a nie tylko w Twojej głowie i w historii czatu.</p>
+      <p>Domyślnie budujesz Pogodę jeszcze raz, ale tym razem ze wszystkimi wymaganiami od początku, łącznie z tymi ze zwrotu akcji. Jeśli wolisz własną małą aplikację z tym samym podziałem (backend i ekran TV), uzgodnij to z trenerem. Inaczej kolumna <code>docs</code> w porównaniu nie będzie porównywalna.</p>
+
+      <details class="howto">
+        <summary>Opis zadania z pełnymi wymaganiami (otwórz po zwrocie akcji)</summary>
+        <div class="howto-body">
+          <div class="doc">
+            <div class="doc-bar"><span>Opis zadania 1c</span><button type="button" class="copy" data-copy="brief-1c">Kopiuj</button></div>
+            <div class="prose" id="brief-1c">Zbuduj aplikację Pogoda. Backend ma dostarczać informacje o pogodzie w Warszawie, a telewizor ma je wyświetlać. Telewizor to strona w przeglądarce udająca ekran TV. Dane pobieraj z Open-Meteo (https://open-meteo.com/), które nie wymaga klucza API.
+
+Wymagania:
+- Telewizor pokazuje aktualną pogodę i prognozę na jutro.
+- Po pierwszym wdrożeniu kodu telewizora nie da się już aktualizować. Każda późniejsza zmiana musi być po stronie backendu.
+- Telewizorów jest 10 000, każdy odświeża dane co minutę. Darmowy limit Open-Meteo to 10 000 zapytań dziennie.</div>
+          </div>
+        </div>
+      </details>
+
+      <h3>Zasady pracy</h3>
+      <!-- TRENER: dopasuj listę do zaleceń z modułów 1 i 2. -->
+      <ul class="rules">
+        <li><b>Najpierw ustalenia, potem kod.</b> Agent pisze kod dopiero po wywiadzie i specyfikacji.</li>
+        <li><b>Małe kroki.</b> Jeden krok, jeden commit, po którym aplikacja działa.</li>
+        <li><b>„Gotowe” znaczy sprawdzone.</b> Nie wierz deklaracji agenta, zobacz wynik.</li>
+        <li><b>Diff przed każdym commitem.</b> Wiesz, co się zmieniło i dlaczego.</li>
+        <li><b>Kontrakt backend ↔ TV ma testy.</b> To on musi przetrwać kolejne zmiany.</li>
+      </ul>
+
+      <h3>Kroki</h3>
+      <ul class="steps">
+        <li><label><input type="checkbox"><span>Utwórz gałąź od startu: <code>git switch -c docs start</code>.</span></label></li>
+        <li><label><input type="checkbox"><span>Nowa sesja agenta. Uruchom <code data-skill="grill"></code> i wklej opis zadania z pełnymi wymaganiami.<span class="hint">W trakcie wywiadu agent zapisuje słownik pojęć w <code>CONTEXT.md</code> i decyzje w <code>docs/adr/</code>.</span></span></label></li>
+        <li><label><input type="checkbox"><span>Pilnuj słownika. Gdy mówisz o czymś nieprecyzyjnie, na przykład „pogoda” zamiast „pogoda aktualna” albo „prognoza”, agent powinien dopytać. Jeśli nie dopytuje, zwróć mu uwagę.</span></label></li>
+        <li><label><input type="checkbox"><span>Po wywiadzie przeczytaj <code>CONTEXT.md</code> i ADR-y. Czy zgadzają się z tym, co ustaliliście? Popraw je, zanim powstanie kod.</span></label></li>
+        <li><label><input type="checkbox"><span>Uruchom <code data-skill="spec"></code> i przeczytaj specyfikację. Opcjonalnie podziel ją na tickety przez <code data-skill="tickets"></code>.</span></label></li>
+        <li><label><input type="checkbox"><span>Implementuj małymi krokami, na przykład przez <code data-skill="implement"></code>: zmiana, sprawdzenie, diff, commit.</span></label></li>
+        <li><label><input type="checkbox"><span>Sprawdź kontrakt. Oznacz stan wdrożony (<code>git tag docs-wdrozone docs</code>) i dodaj prognozę na pojutrze, zmieniając tylko backend. Potem <code>git diff docs-wdrozone docs --stat -- &lt;pliki telewizora&gt;</code> ma dać pusty wynik.</span></label></li>
+        <li><label><input type="checkbox"><span>Uzupełnij kolumnę <code>docs</code> w <a href="#ex-1b">porównaniu w zadaniu 1b</a>.</span></label></li>
+      </ul>
+      <p class="note"><b>Do oddania:</b> <code>CONTEXT.md</code> i co najmniej dwa ADR-y, działająca aplikacja na gałęzi <code>docs</code> i uzupełniona kolumna <code>docs</code> w porównaniu.</p>
+
+      <details class="after">
+        <summary>Po zadaniu: do przemyślenia</summary>
+        <ul>
+          <li>Gdyby jutro do projektu dołączyła nowa osoba albo nowa sesja agenta, na której gałęzi najszybciej zrozumiałaby, dlaczego aplikacja wygląda tak, a nie inaczej?</li>
+          <li>Który ADR przydał się przy prognozie na pojutrze? Którego zabrakło?</li>
+          <li>Ile czasu kosztował wywiad z dokumentacją w porównaniu z 1a? Kiedy ten koszt się zwraca?</li>
+        </ul>
+      </details>
+    </section>
+
+    <!-- ===================== MODUŁ 3 ===================== -->
+    <h2 class="group-head" id="m3">Moduł 3: backend <span data-brand>Lumio</span></h2>
+
+    <!-- ===================== START ===================== -->
+    <section class="ex" id="start" data-group="Moduł 3" data-i="0" data-short="Start" data-title="Przygotowanie">
+      <div class="ex-head">
+        <span class="ex-num">0</span>
+        <h2>Przygotowanie</h2>
+        <span class="ex-progress" data-progress></span>
+      </div>
+      <p class="goal">Cel: repozytorium działa, agent widzi skille i potrafi uruchomić testy, a <code data-skill="check"></code> potwierdza, że środowisko jest gotowe.</p>
+
+      <h3>Zasady pracy w tym module</h3>
+      <ul class="rules">
+        <li><b>Telewizora nie zmieniamy.</b> Klient w katalogu <code>tv/</code> działa już w domach klientów. Każda zmiana jest po stronie serwera i musi działać z obecnym klientem.</li>
+        <li><b>„Gotowe” znaczy: testy uruchomione i zielone.</b> Nie wierz deklaracji agenta, zobacz wynik.</li>
+        <li><b>Małe kroki.</b> Jeden krok, jeden commit.</li>
+        <li><b>Diff przed każdym commitem.</b> Wiesz, co się zmieniło i dlaczego.</li>
+        <li><b>Nowa sesja agenta na każde zadanie.</b> Stary kontekst przeszkadza.</li>
+      </ul>
+
+      <h3>Kroki</h3>
+      <div class="only-cloud">
+        <ul class="steps">
+          <li><label><input type="checkbox"><span>Otwórz <a data-repo href="#" target="_blank" rel="noopener">repozytorium szkoleniowe</a>, wybierz <b>Fork</b> i utwórz własną kopię na swoim koncie GitHub.<span class="hint">W oknie tworzenia forka odznacz „Copy the main branch only”. Gałąź <code>review/support-history</code> jest potrzebna w zadaniu 3e.</span></span></label></li>
+          <li><label><input type="checkbox"><span>W Claude Desktop otwórz zakładkę <b>Code</b>, w wyborze środowiska wybierz <b>Cloud</b> i wskaż swoją kopię repozytorium.<span class="hint">Jeśli to Twoja pierwsza sesja w chmurze, aplikacja poprosi o połączenie z GitHubem i utworzenie środowiska. Zostaw ustawienia domyślne.</span></span></label></li>
+          <li><label><input type="checkbox"><span>Sprawdź skille. Zapytaj agenta: <code>Jakie skille są w tym repozytorium?</code> Na liście powinny być m.in. <code data-skill="grill"></code>, <code data-skill="triage"></code>, <code data-skill="tdd"></code> i <code data-skill="check"></code>.</span></label></li>
+          <li class="required"><label><input type="checkbox"><span>Uruchom <code data-skill="check"></code>.<span class="req">Wymagane</span><span class="hint">Agent sprawdzi Pythona, gita i tag <code>start</code>, skille, testy oraz dane do zadań. Zacznij zadania dopiero, gdy raport kończy się linią „Środowisko gotowe.”</span></span></label></li>
+        </ul>
+        <p class="note">Tag <code>start</code> to punkt, do którego możesz wrócić w każdym zadaniu. Poproś agenta o <code>git reset --hard start</code>, gdy chcesz zacząć od nowa.</p>
+        <p class="note"><b>Nie widzisz skilla na liście podpowiedzi?</b> Claude Desktop ukrywa skille wywoływane ręcznie, ale działają. Wpisz komendę w całości, na przykład <code data-skill="grill"></code>.</p>
+        <p class="note"><b>W chmurze nie masz własnego terminala.</b> Polecenia takie jak <code>git diff</code> czy <code>git stash</code> zlecasz agentowi i prosisz o pokazanie wyniku. Symulator telewizora zobaczysz na ekranie trenera.</p>
+      </div>
+      <div class="only-local">
+        <ul class="steps">
+          <li><label><input type="checkbox"><span>Sklonuj <a data-repo href="#" target="_blank" rel="noopener">repozytorium szkoleniowe</a> albo rozpakuj ZIP od trenera.<span class="hint">Na Windowsie przed rozpakowaniem: prawy klik na ZIP, Właściwości, zaznacz „Odblokuj”.</span></span></label></li>
+          <li><label><input type="checkbox"><span>Sprawdź Pythona w terminalu. Wystarczy, że jedno z poleceń pokaże wersję 3.9 lub nowszą: <code>python3 --version</code>, <code>python --version</code> albo na Windowsie <code>py --version</code>.<span class="hint">Żadne nie działa albo otwiera się Microsoft Store? Zainstaluj przenośnego Pythona według instrukcji pod listą kroków.</span></span></label></li>
+          <li><label><input type="checkbox"><span>Otwórz agenta (Claude Code albo Cline) w katalogu repozytorium.</span></label></li>
+          <li><label><input type="checkbox"><span>Sprawdź skille. Wpisz <code>/</code> i zobacz listę podpowiedzi albo zapytaj agenta: <code>Jakie skille są w tym repozytorium?</code> Na liście powinny być m.in. <code data-skill="grill"></code>, <code data-skill="triage"></code>, <code data-skill="tdd"></code> i <code data-skill="check"></code>.</span></label></li>
+          <li class="required"><label><input type="checkbox"><span>Uruchom <code data-skill="check"></code>.<span class="req">Wymagane</span><span class="hint">Agent sprawdzi Pythona, gita i tag <code>start</code>, skille, testy, dane do zadań i serwer telewizora. Zacznij zadania dopiero, gdy raport kończy się linią „Środowisko gotowe.”</span></span></label></li>
+          <li><label><input type="checkbox"><span>Uruchom serwer: <code>run_server.bat</code> albo <code>./run_server.sh</code>, potem otwórz <a href="http://localhost:8765/tv/?device=TV-001" target="_blank" rel="noopener">localhost:8765/tv/?device=TV-001</a>. Powinien pojawić się telewizor.</span></label></li>
+        </ul>
+        <p class="note">Tag <code>start</code> to punkt, do którego możesz wrócić w każdym zadaniu: <code>git reset --hard start</code>.</p>
+        <details class="howto" id="portable-python">
+          <summary>Nie masz Pythona? Instalacja przenośnej wersji na Windowsie</summary>
+          <div class="howto-body">
+            <p>Przenośny Python nie wymaga instalatora ani uprawnień administratora. Rozpakowujesz go do folderu w repozytorium i od razu działa. Na macOS i Linuksie Python zwykle jest w systemie; jeśli go nie ma, napisz do trenera.</p>
+            <ol>
+              <li>Pobierz <a href="https://www.python.org/ftp/python/3.15.2/python-3.15.2-embed-amd64.zip" target="_blank" rel="noopener">Python 3.15.2, Windows embeddable package (64-bit)</a>. Na laptopie z procesorem ARM (np. Snapdragon) wybierz wersję ARM64 ze <a href="https://www.python.org/downloads/windows/" target="_blank" rel="noopener">strony pobierania Pythona dla Windows</a>.</li>
+              <li>Odblokuj pobrany plik: prawy klik na ZIP, Właściwości, zaznacz „Odblokuj”, OK. Jeśli tej opcji nie ma, przejdź dalej.</li>
+              <li>Rozpakuj zawartość do folderu <code>python</code> w katalogu repozytorium, tak żeby plik leżał tutaj: <code>&lt;repozytorium&gt;\python\python.exe</code>. Git ten folder pomija.</li>
+              <li>Uruchom w agencie <code data-skill="check"></code>. Skill znajdzie rozpakowanego Pythona, także gdy wylądował w dodatkowym podfolderze, i zaproponuje przeniesienie go na miejsce oraz konfigurację. Każdą zmianę zatwierdzasz. Jeśli raport pokaże „Python: ✅”, pozostałe kroki możesz pominąć.</li>
+              <li>Konfiguracja ręczna, jeśli wolisz zrobić to sam: otwórz w Notatniku plik <code>python\python315._pth</code>, dopisz na końcu linię z dwiema kropkami i zapisz. Dzięki temu Python widzi kod repozytorium. Plik ma wyglądać tak:
+                <pre class="snippet">python315.zip
+.
+# Uncomment to run site.main() automatically
+#import site
+..</pre>
+              </li>
+              <li>Po konfiguracji ręcznej sprawdź w terminalu, w katalogu repozytorium:
+                <pre class="snippet">.\python\python.exe --version
+.\python\python.exe -c "import unittest, json; print('ok')"</pre>
+                Pierwsze polecenie pokaże wersję, drugie wypisze <code>ok</code>.</li>
+              <li>Zmiennej PATH nie musisz zmieniać. <code>run_tests.bat</code> i <code>run_server.bat</code> same znajdą Pythona w folderze <code>python</code>, a <code data-skill="check"></code> też go wykryje.</li>
+            </ol>
+            <p>W paczce nie ma pip ani IDLE. Do zadań nie są potrzebne.</p>
+            <p><b>Windows blokuje <code>python.exe</code>?</b> Jeśli SmartScreen lub antywirus nie pozwala go uruchomić, napisz do trenera na czacie szkolenia. Przejdziesz wtedy na pracę w chmurze.</p>
+            <p>Więcej o tej paczce: <a href="https://docs.python.org/3/using/windows.html" target="_blank" rel="noopener">dokumentacja Pythona dla Windows</a>.</p>
+          </div>
+        </details>
+        <p class="note"><b>Coś nie działa?</b> Wklej trenerowi na czacie szkolenia raport z <code data-skill="check"></code> albo komunikat błędu. Nie trać czasu na walkę ze środowiskiem.</p>
+      </div>
+    </section>
+
+    <!-- ===================== 3a ===================== -->
+    <section class="ex" id="ex-3a" data-group="Moduł 3" data-i="1" data-short="3a" data-title="Kto dostaje aktualizację?">
+      <div class="ex-head">
+        <span class="ex-num">3a</span>
+        <h2>Kto dostaje aktualizację?</h2>
+        <span class="ex-progress" data-progress></span>
+      </div>
+      <p class="goal">Cel: od maila produktowego do działającej, przetestowanej logiki. Najpierw ustalasz, co dokładnie ma powstać, dopiero potem agent pisze kod.</p>
+      <p>Na pytania, na które nie znasz odpowiedzi, odpowiada trener. Dzisiaj jest Twoim PM-em.</p>
+
+      <div class="doc">
+        <div class="doc-bar"><span>Mail od Product Managera</span><button type="button" class="copy" data-copy="mail-3a">Kopiuj</button></div>
+        <div class="prose" id="mail-3a">Od: Kasia Wrona, Product
+Temat: Firmware 2.10 – rollout od poniedziałku
+
+Cześć,
+
+w poniedziałek startujemy z firmware 2.10 dla serii Q i X (modele LM-50Q21, LM-55Q23 i LM-65X25). Potrzebujemy na backendzie logiki, która zdecyduje, czy dany telewizor ma dostać aktualizację, kiedy pyta o nią serwer.
+
+- Aktualizację dostają tylko telewizory, które mają starszą wersję niż 2.10.
+- Telewizory poniżej 2.0 muszą najpierw przejść na 2.0, tak było przy ostatniej zmianie partycji.
+- Na start wypuszczamy na 10% urządzeń, potem będziemy podbijać.
+- Nie przeszkadzajmy ludziom w oglądaniu.
+- Najpierw region EU, reszta później.
+
+Dzięki!
+Kasia</div>
+      </div>
+
+      <h3>Kroki</h3>
+      <ul class="steps">
+        <li><label><input type="checkbox"><span>Zacznij nową sesję agenta i uruchom <code data-skill="grill"></code>, wklejając treść maila. Odpowiadaj na pytania agenta, a gdy nie wiesz, pytaj trenera.</span></label></li>
+        <li><label><input type="checkbox"><span>Prowadź rozmowę, nie odpowiadaj tylko „ok”. Nie zgadzaj się z rekomendacją agenta, jeśli jest zła, i mów „nie wiem”, gdy nie wiesz.</span></label></li>
+        <li><label><input type="checkbox"><span>Ty decydujesz, kiedy wystarczy. Gdy najważniejsze decyzje są ustalone, a pytania schodzą w szczegóły, przerwij grilling, na przykład: <code>Wystarczy. Dla pozostałych pytań przyjmij swoje rekomendacje i wypisz je jako założenia.</code> Przejrzyj tę listę założeń.</span></label></li>
+        <li><label><input type="checkbox"><span>Zapisz, które decyzje padły w rozmowie, a nie było ich w mailu.</span></label></li>
+        <li><label><input type="checkbox"><span>Uruchom <code data-skill="spec"></code> i przeczytaj specyfikację. Popraw ją, jeśli coś się nie zgadza z ustaleniami.</span></label></li>
+        <li><label><input type="checkbox"><span>Uruchom <code data-skill="tickets"></code> i przejrzyj tickety. Każdy powinien dać się zrobić i przetestować osobno.</span></label></li>
+        <li><label><input type="checkbox"><span>Uruchom <code data-skill="implement"></code> dla pierwszego ticketu. Testy zielone, diff przejrzany, commit.</span></label></li>
+        <li><label><input type="checkbox"><span>Jeśli starczy czasu, zrób kolejne tickety tak samo.</span></label></li>
+        <li><label><input type="checkbox"><span>Zgłoś trenerowi gotowość. Trener uruchomi na Twoim kodzie swoje testy akceptacyjne.</span></label></li>
+      </ul>
+
+      <details class="after">
+        <summary>Po zadaniu: do przemyślenia</summary>
+        <ul>
+          <li>Które decyzje padły podczas grillingu, a nie było ich w mailu? Co zrobiłby agent bez nich?</li>
+          <li>Kiedy przerwałeś grilling i dlaczego właśnie wtedy? Czy któreś z przyjętych założeń wróciło w testach akceptacyjnych?</li>
+          <li>Które testy akceptacyjne nie przeszły? Czy dało się je przewidzieć z rozmowy?</li>
+        </ul>
+      </details>
+    </section>
+
+    <!-- ===================== 3b ===================== -->
+    <section class="ex" id="ex-3b" data-group="Moduł 3" data-i="2" data-short="3b" data-title="Porządki w katalogu aplikacji">
+      <div class="ex-head">
+        <span class="ex-num">3b</span>
+        <h2>Porządki w katalogu aplikacji</h2>
+        <span class="ex-progress" data-progress></span>
+      </div>
+      <p class="goal">Cel: uporządkować stary kod małymi krokami, bez zmiany zachowania, z weryfikacją po każdym kroku.</p>
+      <p>Funkcja, która wybiera aplikacje widoczne na danym telewizorze (<code>get_apps_for_device</code> w <code>backend/catalog.py</code>), jest jednym długim blokiem warunków i nikt nie chce jej dotykać. Zanim dołożymy do niej nowe funkcje, trzeba ją uporządkować. Telewizory w terenie muszą widzieć dokładnie to samo co dziś.</p>
+
+      <h3>Kroki</h3>
+      <ul class="steps">
+        <li><label><input type="checkbox"><span>Nowa sesja agenta. Poproś agenta o opis, co ta funkcja robi i od czego zależy jej wynik. Na razie bez żadnych zmian w kodzie.</span></label></li>
+        <li><label><input type="checkbox"><span>Zanim cokolwiek zmienisz: poproś o testy charakteryzacyjne, które utrwalą obecne zachowanie dla różnych modeli, regionów i wersji. Testy zielone, commit.</span></label></li>
+        <li><label><input type="checkbox"><span>Poproś agenta o plan refaktoryzacji w małych krokach. Każdy krok ma być osobnym commitem.</span></label></li>
+        <li><label><input type="checkbox"><span>Wykonuj kroki po jednym: zmiana, testy, przejrzenie diffa, commit. Zatrzymaj agenta, jeśli chce zrobić kilka kroków naraz.</span></label></li>
+        <li><label><input type="checkbox"><span>Sprawdź, czy testy charakteryzacyjne nie zmieniły się od swojego commita.<span class="hint only-local">Na przykład: <code>git diff &lt;commit z testami&gt; HEAD -- tests/</code></span><span class="hint only-cloud">Poproś agenta o diff katalogu <code>tests/</code> od commita z testami i pokaż wynik.</span></span></label></li>
+        <li><label><input type="checkbox"><span>Przejrzyj historię commitów. Czy każdy commit to jeden zrozumiały krok?</span></label></li>
+      </ul>
+
+      <details class="after">
+        <summary>Po zadaniu: do przemyślenia</summary>
+        <ul>
+          <li>Skąd wiesz, że zachowanie się nie zmieniło?</li>
+          <li>Czy agent w którymś momencie zmienił test albo coś „przy okazji” naprawił? Jak to zauważyłeś?</li>
+        </ul>
+      </details>
+    </section>
+
+    <!-- ===================== 3c ===================== -->
+    <section class="ex" id="ex-3c" data-group="Moduł 3" data-i="3" data-short="3c" data-title="Incydent: pętla aktualizacji">
+      <div class="ex-head">
+        <span class="ex-num">3c</span>
+        <h2>Incydent: pętla aktualizacji</h2>
+        <span class="ex-progress" data-progress></span>
+      </div>
+      <p class="goal">Cel: przyjąć cudze zgłoszenie bez przyjmowania jego diagnozy na wiarę, a potem znaleźć przyczynę, nie objaw. Triage, reprodukcja, hipotezy, minimalna poprawka i test, który pilnuje, żeby błąd nie wrócił.</p>
+      <p>Support właśnie przysłał zgłoszenie. Nie ma go jeszcze w trackerze repozytorium: dodasz je sam, zanim zaczniesz triage.</p>
+
+      <div class="doc">
+        <div class="doc-bar"><span>Zgłoszenie z supportu</span><button type="button" class="copy" data-copy="inc-3c">Kopiuj</button></div>
+        <div class="prose" id="inc-3c"># INC-2291: telewizory w kółko pobierają tę samą aktualizację
+
+Status: needs-triage
+Zgłaszający: support, 2. linia
+Priorytet: wysoki
+
+Od wczoraj rośnie liczba zgłoszeń. Telewizory po aktualizacji co chwilę pokazują komunikat o dostępnej aktualizacji, pobierają ją i restartują się. Dotyczy części urządzeń w Europie.
+
+W logach serwera widać, że te same urządzenia pytają o aktualizację kilkadziesiąt razy na dobę. Urządzenia testowe w biurze działają poprawnie.
+
+Przykładowe urządzenie: TV-003 (LM-65X25, EU).</div>
+      </div>
+
+      <h3>Kroki</h3>
+      <ul class="steps">
+        <li><label><input type="checkbox"><span>Zobacz problem na własne oczy.<span class="hint only-local">Uruchom serwer i otwórz <a href="http://localhost:8765/tv/?device=TV-003" target="_blank" rel="noopener">localhost:8765/tv/?device=TV-003</a>.</span><span class="hint only-cloud">Trener pokaże urządzenie TV-003 na swoim ekranie.</span></span></label></li>
+        <li><label><input type="checkbox"><span>Nowa sesja agenta. Dodaj zgłoszenie do trackera: skopiuj je przyciskiem „Kopiuj” i wyślij agentowi z poleceniem:
+          <pre class="snippet">Zapisz poniższe zgłoszenie bez żadnych zmian w pliku
+.scratch/zgloszenia/issues/01-inc-2291-petla-aktualizacji.md.
+Niczego nie analizuj i nie zmieniaj w kodzie.
+
+&lt;tu wklej skopiowane zgłoszenie&gt;</pre>
+          <span class="hint">Sprawdź, że plik powstał i zaczyna się od linii z tytułem, a pod nią jest <code>Status: needs-triage</code>.</span></span></label></li>
+        <li><label><input type="checkbox"><span>W tej samej sesji uruchom <code data-skill="triage"></code> i napisz:
+          <pre class="snippet">Weźmy zgłoszenie INC-2291.
+Odtwórz pętlę, symulując dokładnie kolejność wywołań z tv/app.js,
+łącznie z refreshDevice().</pre>
+          <span class="hint">Bez tego agent łatwo upraszcza telewizor do „sprawdź, pobierz, zgłoś” i pomija odczyt urządzenia po restarcie. Wtedy nie odtworzy błędu i odeśle zgłoszenie do supportu z pytaniami.</span></span></label></li>
+        <li><label><input type="checkbox"><span>Agent zbierze kontekst i zaproponuje kategorię oraz stan zgłoszenia. Nie zatwierdzaj niczego, dopóki błąd nie jest odtworzony. Opis zgłaszającego to hipoteza, nie fakt.</span></label></li>
+        <li><label><input type="checkbox"><span>W tej samej sesji odtwórz błąd przez <code data-skill="diagnose"></code>: test, który odtwarza problem i nie przechodzi.</span></label></li>
+        <li><label><input type="checkbox"><span>Poproś o listę hipotez i sposób sprawdzenia każdej. Zapisz, które hipotezy odpadły i dlaczego.</span></label></li>
+        <li><label><input type="checkbox"><span>Zatwierdź wynik triage. Przeczytaj brief dla agenta: czy opisuje zachowanie i kryteria akceptacji, a nie konkretne pliki i linie?</span></label></li>
+        <li><label><input type="checkbox"><span>Minimalna poprawka. Pamiętaj: telewizora nie zmieniamy.</span></label></li>
+        <li><label><input type="checkbox"><span>Udowodnij, że test regresyjny działa: bez poprawki nie przechodzi, z poprawką przechodzi.<span class="hint only-local">Na przykład: <code>git stash</code> na poprawce, testy, <code>git stash pop</code>, testy.</span><span class="hint only-cloud">Poproś agenta: „Cofnij poprawkę, uruchom test, przywróć poprawkę, uruchom test ponownie. Pokaż oba wyniki”.</span></span></label></li>
+        <li><label><input type="checkbox"><span>Commit z opisem przyczyny, nie tylko objawu. Zaktualizuj zgłoszenie: co było przyczyną i czym ją usunięto.</span></label></li>
+      </ul>
+
+      <details class="after">
+        <summary>Po zadaniu: do przemyślenia</summary>
+        <ul>
+          <li>Czy diagnoza ze zgłoszenia była trafna? Co by się stało, gdyby agent od razu oznaczył je jako gotowe do implementacji?</li>
+          <li>Ile hipotez odrzuciłeś? Która była pierwsza i dlaczego okazała się błędna?</li>
+          <li>Gdzie znalazłaby się poprawka, gdyby kierować się samym objawem?</li>
+        </ul>
+      </details>
+    </section>
+
+    <!-- ===================== 3d ===================== -->
+    <section class="ex" id="ex-3d" data-group="Moduł 3" data-i="4" data-short="3d" data-title="Walidator paczki firmware'u">
+      <div class="ex-head">
+        <span class="ex-num">3d</span>
+        <h2>Walidator paczki firmware'u</h2>
+        <span class="ex-progress" data-progress></span>
+      </div>
+      <p class="goal">Cel: napisać walidator metodą TDD. Najpierw czerwony test, potem minimalny kod, na końcu porządki przy zielonych testach.</p>
+      <p>Zanim telewizor zainstaluje paczkę, serwer sprawdza, czy jest poprawna. Specyfikacja formatu jest poniżej, a wektory testowe (wejście w hex i oczekiwany wynik) są w <code>fixtures/firmware_vectors.json</code>.</p>
+
+      <div class="doc">
+        <div class="doc-bar"><span>Specyfikacja formatu paczki</span><button type="button" class="copy" data-copy="spec-3d">Kopiuj</button></div>
+        <pre id="spec-3d">Format LMFW: paczka = nagłówek (16 bajtów) + payload.
+
+Nagłówek:
+  bajty 0-3    magiczne bajty, ASCII "LMFW" (wielkie litery)
+  bajt  4      wersja nagłówka, obecnie 1
+  bajty 5-7    wersja firmware: major, minor, patch (po 1 bajcie)
+  bajty 8-11   rozmiar payloadu w bajtach, uint32 big-endian
+  bajty 12-15  CRC32 payloadu, uint32 big-endian
+
+Maksymalny rozmiar payloadu: 16 MiB (16 777 216 bajtów).
+
+Wynik walidacji:
+  poprawna paczka -> valid: true,
+                     version: "major.minor.patch",
+                     payload_size: rozmiar payloadu
+  błędna paczka   -> valid: false, error: jeden kod błędu
+
+Kody błędów, w kolejności sprawdzania
+(zwracany jest pierwszy napotkany):
+  1. TRUNCATED           mniej niż 16 bajtów
+  2. BAD_MAGIC           magiczne bajty inne niż "LMFW"
+  3. UNSUPPORTED_HEADER  wersja nagłówka inna niż 1
+  4. TOO_LARGE           zadeklarowany rozmiar powyżej 16 MiB
+  5. EMPTY_PAYLOAD       zadeklarowany rozmiar równy 0
+  6. SIZE_MISMATCH       faktyczna długość payloadu inna
+                         niż zadeklarowana
+  7. BAD_CRC             CRC32 payloadu inne niż w nagłówku</pre>
+      </div>
+
+      <h3>Kroki</h3>
+      <ul class="steps">
+        <li><label><input type="checkbox"><span>Nowa sesja agenta. Uruchom <code data-skill="tdd"></code> ze specyfikacją.</span></label></li>
+        <li><label><input type="checkbox"><span>Jeden przypadek na raz: test, uruchomienie, czerwony wynik, minimalny kod, zielony wynik. Zatrzymaj agenta, jeśli pisze kilka testów naraz albo test razem z implementacją.</span></label></li>
+        <li><label><input type="checkbox"><span>Przy każdym czerwonym teście przeczytaj komunikat błędu. Czy test nie przechodzi z właściwego powodu?</span></label></li>
+        <li><label><input type="checkbox"><span>Wszystkie wektory z <code>fixtures/firmware_vectors.json</code> przechodzą.</span></label></li>
+        <li><label><input type="checkbox"><span>Porządki w kodzie przy zielonych testach, commit.</span></label></li>
+        <li><label><input type="checkbox"><span>Na koniec trener uruchomi Twoje testy na kilku celowo zepsutych walidatorach. Ile z nich Twoje testy złapią?</span></label></li>
+      </ul>
+      <p class="note"><b>Opcjonalnie we własnym języku.</b> Jeśli pracujesz na co dzień w C++, Javie albo Kotlinie i masz działające środowisko, napisz walidator w swoim języku. Agent postawi szkielet projektu, a wektory testowe z <code>fixtures/</code> są wspólne.</p>
+
+      <details class="after">
+        <summary>Po zadaniu: do przemyślenia</summary>
+        <ul>
+          <li>Czy któryś test przechodził od razu, zanim powstał kod? Co to mówi o tym teście?</li>
+          <li>Które zepsute walidatory przeżyły Twoje testy i jakiego testu zabrakło?</li>
+        </ul>
+      </details>
+    </section>
+
+    <!-- ===================== 3e ===================== -->
+    <section class="ex" id="ex-3e" data-group="Moduł 3" data-i="5" data-short="3e" data-title="Kanał beta i review">
+      <div class="ex-head">
+        <span class="ex-num">3e</span>
+        <h2>Kanał beta i review</h2>
+        <span class="ex-progress" data-progress></span>
+      </div>
+      <p class="goal">Cel: zmiana w wielu plikach, nad której zakresem panujesz. Diff jest Twoim narzędziem review.</p>
+
+      <h3>Część A: kanał beta</h3>
+      <div class="doc">
+        <div class="doc-bar"><span>Mail od Product Managera</span><button type="button" class="copy" data-copy="mail-3e">Kopiuj</button></div>
+        <div class="prose" id="mail-3e">Od: Kasia Wrona, Product
+Temat: Kanał beta
+
+Cześć,
+
+chcemy, żeby użytkownik mógł zapisać swój telewizor do kanału beta i z niego wypisać. Zapis i wypis robimy z aplikacji mobilnej, nie z telewizora. Telewizor w kanale beta dostaje wcześniej nowe wersje firmware'u i widzi aplikacje oznaczone jako beta.
+
+Dzięki!
+Kasia</div>
+      </div>
+
+      <ul class="steps">
+        <li><label><input type="checkbox"><span>Zanim agent zacznie: zapisz poniżej, które pliki lub moduły według Ciebie powinny się zmienić.</span></label></li>
+      </ul>
+      <textarea data-note="scope-3e" aria-label="Mój zakładany zakres zmian" placeholder="Na przykład: API, reguły aktualizacji, katalog aplikacji, przechowywanie danych, testy…"></textarea>
+      <span class="saved" data-saved="scope-3e"></span>
+
+      <ul class="steps">
+        <li><label><input type="checkbox"><span>Nowa sesja agenta. Zaplanuj i zaimplementuj zmianę, na przykład przez <code data-skill="tickets"></code> i <code data-skill="implement"></code>.</span></label></li>
+        <li><label><input type="checkbox"><span>Porównaj zakres zmian ze swoją deklaracją.<span class="hint only-local"><code>git diff --stat</code></span><span class="hint only-cloud">Poproś agenta o <code>git diff --stat</code> albo otwórz widok zmian w sesji.</span></span></label></li>
+        <li><label><input type="checkbox"><span>Każdy plik spoza deklaracji: uzasadnij albo cofnij zmianę.<span class="hint only-local"><code>git add -p</code> pozwala dodać do commita tylko wybrane fragmenty.</span><span class="hint only-cloud">W widoku zmian możesz komentować konkretne linie i wysłać komentarze agentowi.</span></span></label></li>
+        <li><label><input type="checkbox"><span>Uruchom <code data-skill="review"></code> na swoich zmianach i rozważ uwagi.</span></label></li>
+        <li><label><input type="checkbox"><span>Wszystkie testy zielone, w tym test, który pilnuje, że telewizor się nie zmienił. Commit.</span></label></li>
+      </ul>
+
+      <h3>Część B: review cudzego PR-a</h3>
+      <p>Na gałęzi <code>review/support-history</code> jest PR innego zespołu, przygotowany z agentem: endpoint dla supportu pokazujący historię aktualizacji urządzenia. Zrób review tak, jakby miał trafić na <code>main</code> jutro rano.</p>
+      <ul class="steps">
+        <li><label><input type="checkbox"><span>Najpierw sam przeczytaj cały diff, bez agenta.<span class="hint only-local">W terminalu: <code>git diff main...review/support-history</code>, albo <a data-compare href="#" target="_blank" rel="noopener">porównanie gałęzi na GitHubie</a>.</span><span class="hint only-cloud">Otwórz <a data-compare href="#" target="_blank" rel="noopener">porównanie gałęzi na GitHubie</a>.</span></span></label></li>
+        <li><label><input type="checkbox"><span>Zapisz poniżej wszystko, co nie powinno trafić na <code>main</code>, z krótkim uzasadnieniem.</span></label></li>
+      </ul>
+      <textarea data-note="review-3e" aria-label="Moje znaleziska z review" placeholder="Plik, linia, problem, dlaczego…"></textarea>
+      <span class="saved" data-saved="review-3e"></span>
+      <ul class="steps">
+        <li><label><input type="checkbox"><span>Teraz poproś agenta o review tej gałęzi skillem <code data-skill="review"></code> i porównaj jego listę ze swoją.</span></label></li>
+        <li><label><input type="checkbox"><span>Trener pokaże pełną listę problemów. Ile znalazłeś Ty, a ile agent?</span></label></li>
+      </ul>
+
+      <details class="after">
+        <summary>Po zadaniu: do przemyślenia</summary>
+        <ul>
+          <li>Ile plików spoza Twojej deklaracji pojawiło się w diffie w części A? Skąd się wzięły?</li>
+          <li>Co w części B znalazłeś Ty, a czego nie zauważył agent? I odwrotnie?</li>
+        </ul>
+      </details>
+    </section>
+
+    <!-- ===================== MODUŁY 5–6: MCP ===================== -->
+    <h2 class="group-head" id="mcp">Moduły 5 i 6: MCP</h2>
+    <p class="group-lead">Do tej pory agent znał tylko pliki repozytorium. Teraz dostanie narzędzia: najpierw podłączysz gotowy serwer MCP i sprawdzisz, komu ufasz, a potem zbudujesz własny. Serwery są w katalogu <code>mcp_server/</code>, opis plików jest w <code>mcp_server/README.md</code>.</p>
+
+    <!-- ===================== 5a ===================== -->
+    <section class="ex" id="ex-5a" data-i="6" data-group="Moduły 5–6: MCP" data-short="5a" data-title="Gotowy serwer MCP">
+      <div class="ex-head">
+        <span class="ex-num">5a</span>
+        <h2>Gotowy serwer MCP</h2>
+        <span class="ex-progress" data-progress></span>
+      </div>
+      <p class="goal">Cel: agent korzysta z danych Lumio przez serwer MCP, a Ty widzisz, które narzędzia wywołuje i z jakimi argumentami. Rozróżniasz narzędzia (tools), zasoby (resources) i prompty.</p>
+      <p>Zespół backendu ma serwer MCP <b>Lumio Ops</b> (<code>mcp_server/lumio_ops.py</code>): rejestr urządzeń, wydania firmware'u i bieżące reguły OTA. Support chce pytać o telewizory agenta, zamiast przeglądać pliki JSON.</p>
+
+      <h3>Kroki</h3>
+      <div class="only-local">
+        <ul class="steps">
+          <li><label><input type="checkbox"><span>Zainstaluj oficjalne SDK w środowisku <code>.venv</code> w katalogu repozytorium, nie globalnie:
+          <pre class="snippet">py -3 -m venv .venv
+.venv\Scripts\python -m pip install -r mcp_server/requirements.txt</pre>
+          <span class="hint">Najpierw przejdź do katalogu głównego repozytorium, tam gdzie leży <code>README.md</code>, np. <code>cd C:\Users\ty\tv-backend</code>. Z innego katalogu dostaniesz błąd o brakującym pliku. Polecenia powyżej są dla PowerShell i cmd, w Git Bash pisz ukośniki: <code>.venv/Scripts/python</code>. Na macOS i Linuksie: <code>python3 -m venv .venv</code>, potem <code>.venv/bin/python -m pip install -r mcp_server/requirements.txt</code>. SDK wymaga Pythona 3.10 lub nowszego. Globalna instalacja podnosi wersje wspólnych bibliotek i potrafi zepsuć inne narzędzia w systemowym Pythonie. Nie da się utworzyć <code>.venv</code> (przenośny Python nie ma modułu <code>venv</code>) albo instalacja jest zablokowana? Przejdź dalej. Serwer sam przełączy się na wersję na czystym stdlib, patrz „Bez SDK” pod krokami.</span></span></label></li>
+          <li class="required"><label><input type="checkbox"><span>Sprawdź serwer bez agenta: <code>.venv\Scripts\python mcp_server/smoke.py mcp_server/lumio_ops.py</code><span class="req">Wymagane</span><span class="hint">Na macOS i Linuksie <code>.venv/bin/python</code>, a bez <code>.venv</code> systemowy <code>python</code>. Pierwsza linia mówi, czym działa serwer: SDK albo <code>mcp_lite</code>. Przeczytaj opisy narzędzi: to dokładnie ten tekst, który dostanie model.</span></span></label></li>
+          <li><label><input type="checkbox"><span>Wywołaj jedno narzędzie ręcznie: <code>.venv\Scripts\python mcp_server/smoke.py mcp_server/lumio_ops.py --call get_device device_id=TV-003</code>, a potem z nieistniejącym <code>TV-999</code>. Przeczytaj komunikat błędu. Czy agent będzie wiedział, co zrobić dalej?</span></label></li>
+          <li><label><input type="checkbox"><span>Podłącz serwer do swojego agenta według instrukcji pod krokami. Dla Claude Code to plik <code>.mcp.json</code> w katalogu repozytorium, dla Cline ustawienia MCP w panelu.</span></label></li>
+          <li><label><input type="checkbox"><span>Nowa sesja agenta. Sprawdź, czy serwer jest połączony.<span class="hint">Claude Code: wpisz <code>/mcp</code>. Przy pierwszym starcie zapyta, czy ufasz serwerom z <code>.mcp.json</code>: zatwierdź <code>lumio</code>. Cline: przy serwerze w panelu MCP Servers powinna świecić zielona kropka.</span></span></label></li>
+          <li><label><input type="checkbox"><span>Zapytaj: <code>Które telewizory w regionie EU mają firmware starszy niż 2.9.0? Korzystaj tylko z narzędzi serwera lumio.</code> Patrz, które narzędzie agent wybrał, z jakimi argumentami i ile razy je wołał.<span class="hint">Agent pyta o zgodę przed wywołaniem narzędzia MCP. Zanim się zgodzisz, przeczytaj nazwę narzędzia i argumenty.</span></span></label></li>
+          <li><label><input type="checkbox"><span>Zasób: w Claude Code wpisz <code>@</code>, wybierz <code>lumio:lumio://releases</code> i dopisz: <code>Które modele nie dostaną wersji 2.9.0?</code><span class="hint">Tym razem to Ty dołączasz dane do rozmowy, a nie model sięga po narzędzie. W Cline poproś agenta o odczyt zasobu <code>lumio://releases</code>.</span></span></label></li>
+          <li><label><input type="checkbox"><span>Prompt: w Claude Code wpisz <code>/mcp__lumio__diagnose_device TV-003</code> i przeczytaj, jakie polecenie dostał agent.<span class="hint">W Cline pomiń ten krok.</span></span></label></li>
+          <li><label><input type="checkbox"><span>Zapisz poniżej, kto decyduje o użyciu narzędzia, zasobu i promptu.</span></label></li>
+        </ul>
+      </div>
+      <div class="only-cloud">
+        <ul class="steps">
+          <li><label><input type="checkbox"><span>Na GitHubie, w swoim forku, dodaj w katalogu głównym plik <code>.mcp.json</code> z konfiguracją dla chmury spod kroków (<b>Add file</b>, <b>Create new file</b>, commit na <code>main</code>).<span class="hint">Sesja w chmurze klonuje repozytorium przy starcie, więc plik musi być w forku, zanim ją zaczniesz. W chmurze serwery z <code>.mcp.json</code> są ładowane bez pytania o zgodę.</span></span></label></li>
+          <li><label><input type="checkbox"><span>Opcjonalnie: jeśli możesz edytować środowisko w chmurze, dopisz w jego <b>Setup script</b> linię <code>pip install -r mcp_server/requirements.txt || true</code>.<span class="hint">Bez tego serwer też działa, na wersji na czystym stdlib (<code>mcp_lite</code>).</span></span></label></li>
+          <li class="required"><label><input type="checkbox"><span>Nowa sesja w chmurze. Poproś agenta: <code>Uruchom python3 mcp_server/smoke.py mcp_server/lumio_ops.py i pokaż cały wynik.</code><span class="req">Wymagane</span><span class="hint">Pierwsza linia mówi, czym działa serwer: SDK albo <code>mcp_lite</code>. Przeczytaj opisy narzędzi: to dokładnie ten tekst, który dostanie model.</span></span></label></li>
+          <li><label><input type="checkbox"><span>Poproś o wywołanie narzędzia przez skrypt: <code>python3 mcp_server/smoke.py mcp_server/lumio_ops.py --call get_device device_id=TV-999</code>. Przeczytaj komunikat błędu. Czy agent będzie wiedział, co zrobić dalej?</span></label></li>
+          <li><label><input type="checkbox"><span>Sprawdź, czy agent widzi serwer: wpisz <code>/mcp</code> albo zapytaj <code>Jakie narzędzia masz z serwera lumio?</code></span></label></li>
+          <li><label><input type="checkbox"><span>Zapytaj: <code>Które telewizory w regionie EU mają firmware starszy niż 2.9.0? Korzystaj tylko z narzędzi serwera lumio.</code> Patrz, które narzędzie agent wybrał, z jakimi argumentami i ile razy je wołał.</span></label></li>
+          <li><label><input type="checkbox"><span>Zasób: wpisz <code>@</code>, wybierz <code>lumio:lumio://releases</code> i dopisz: <code>Które modele nie dostaną wersji 2.9.0?</code><span class="hint">Tym razem to Ty dołączasz dane do rozmowy, a nie model sięga po narzędzie.</span></span></label></li>
+          <li><label><input type="checkbox"><span>Prompt: wpisz <code>/mcp__lumio__diagnose_device TV-003</code> i przeczytaj, jakie polecenie dostał agent.</span></label></li>
+          <li><label><input type="checkbox"><span>Zapisz poniżej, kto decyduje o użyciu narzędzia, zasobu i promptu.</span></label></li>
+        </ul>
+      </div>
+      <textarea data-note="who-5a" aria-label="Kto decyduje o użyciu narzędzia, zasobu i promptu" placeholder="Narzędzie: … Zasób: … Prompt: …"></textarea>
+      <span class="saved" data-saved="who-5a"></span>
+
+      <details class="howto only-local">
+        <summary>Jak podłączyć serwer: Claude Code</summary>
+        <div class="howto-body">
+          <p>Utwórz w katalogu głównym repozytorium plik <code>.mcp.json</code>. W <code>command</code> wpisz Pythona ze środowiska <code>.venv</code>, bo tylko on ma SDK. Poniżej wersja dla Windowsa. Na macOS i Linuksie końcówka ścieżki to <code>/.venv/bin/python</code>. Bez <code>.venv</code> wpisz polecenie, które działa u Ciebie: <code>python</code>, <code>python3</code> albo <code>py</code> z pierwszym argumentem <code>"-3"</code>.</p>
+          <div class="doc">
+            <div class="doc-bar"><span>.mcp.json (lokalnie)</span><button type="button" class="copy" data-copy="cfg-cc-local">Kopiuj</button></div>
+            <pre id="cfg-cc-local">{
+  "mcpServers": {
+    "lumio": {
+      "command": "${CLAUDE_PROJECT_DIR:-.}/.venv/Scripts/python.exe",
+      "args": ["${CLAUDE_PROJECT_DIR:-.}/mcp_server/lumio_ops.py"]
+    }
+  }
+}</pre>
+          </div>
+          <p>Zamiast pisać plik ręcznie możesz w terminalu uruchomić <code>claude mcp add --scope project lumio -- .venv/Scripts/python.exe mcp_server/lumio_ops.py</code>. Polecenie zapisze ten sam plik.</p>
+          <p>Zmiany w <code>.mcp.json</code> działają od nowej sesji. <code>/mcp</code> pokazuje stan serwerów i pozwala połączyć je ponownie.</p>
+        </div>
+      </details>
+      <details class="howto only-local">
+        <summary>Jak podłączyć serwer: Cline</summary>
+        <div class="howto-body">
+          <ol>
+            <li>W panelu Cline kliknij ikonę <b>MCP Servers</b>, otwórz zakładkę <b>Configure</b> i wybierz <b>Configure MCP Servers</b>. Otworzy się plik JSON z ustawieniami.</li>
+            <li>Dopisz serwer w sekcji <code>mcpServers</code>. Ustawienia Cline nie są związane z repozytorium, więc obie ścieżki muszą być <b>pełne</b>: do Pythona ze środowiska <code>.venv</code> i do serwera. Na macOS i Linuksie Python leży w <code>.venv/bin/python</code>. Bez <code>.venv</code> wpisz w <code>command</code> po prostu <code>python</code>.
+              <div class="doc">
+                <div class="doc-bar"><span>Ustawienia MCP w Cline</span><button type="button" class="copy" data-copy="cfg-cline">Kopiuj</button></div>
+                <pre id="cfg-cline">{
+  "mcpServers": {
+    "lumio": {
+      "command": "C:\\ścieżka\\do\\tv-backend\\.venv\\Scripts\\python.exe",
+      "args": ["C:\\ścieżka\\do\\tv-backend\\mcp_server\\lumio_ops.py"],
+      "disabled": false,
+      "autoApprove": []
+    }
+  }
+}</pre>
+              </div>
+            </li>
+            <li>Zapisz plik. Cline uruchomi serwer od razu. Pusta lista <code>autoApprove</code> oznacza, że Cline pyta o zgodę przy każdym wywołaniu.</li>
+          </ol>
+        </div>
+      </details>
+      <div class="doc only-cloud">
+        <div class="doc-bar"><span>.mcp.json (chmura)</span><button type="button" class="copy" data-copy="cfg-cc-cloud">Kopiuj</button></div>
+        <pre id="cfg-cc-cloud">{
+  "mcpServers": {
+    "lumio": {
+      "command": "python3",
+      "args": ["${CLAUDE_PROJECT_DIR:-.}/mcp_server/lumio_ops.py"]
+    },
+    "katalog": {
+      "command": "python3",
+      "args": ["${CLAUDE_PROJECT_DIR:-.}/mcp_server/katalog.py"]
+    }
+  }
+}</pre>
+      </div>
+      <p class="note only-cloud">Serwer <code>katalog</code> zbudujesz w zadaniu 6a. Do tego czasu <code>/mcp</code> pokaże przy nim błąd połączenia. Tak ma być.</p>
+
+      <details class="howto" id="no-sdk">
+        <summary>Bez SDK: MCP na czystym stdlib</summary>
+        <div class="howto-body">
+          <p>Gdy nie da się zainstalować pakietu <code>mcp</code>, serwery z <code>mcp_server/</code> używają <code>mcp_server/mcp_lite.py</code>. To około 250 linii na bibliotece standardowej, z tym samym API co oficjalne SDK dla tego, czego używamy na szkoleniu. W swoim serwerze zmieniasz tylko importy:</p>
+          <pre class="snippet">try:
+    from mcp.server.mcpserver import MCPServer
+    from mcp.server.mcpserver.exceptions import ToolError
+    from mcp.types import ToolAnnotations
+    from pydantic import Field
+except ImportError:
+    from mcp_lite import MCPServer, ToolError, ToolAnnotations, Field</pre>
+          <p>Pod spodem MCP przez stdio to JSON-RPC: agent uruchamia serwer jako proces, pisze do jego wejścia po jednej wiadomości JSON w linii (<code>initialize</code>, <code>tools/list</code>, <code>tools/call</code>) i czyta odpowiedzi z wyjścia. Dlatego serwer nie może niczego wypisywać na stdout, logi kieruje na stderr. Przykładową wymianę wiadomości i listę ograniczeń <code>mcp_lite</code> znajdziesz w <code>mcp_server/README.md</code>.</p>
+        </div>
+      </details>
+
+      <details class="after">
+        <summary>Po zadaniu: do przemyślenia</summary>
+        <ul>
+          <li>Czy agent wybrał <code>list_devices</code> z filtrem, czy pobrał wszystko i przefiltrował sam? Co w opisie narzędzia o tym zdecydowało?</li>
+          <li>Narzędzie wybiera model, zasób dołącza użytkownik albo aplikacja, prompt uruchamia użytkownik. Do czego w Twojej pracy pasowałby każdy z nich?</li>
+          <li>Jakie gotowe serwery MCP przydałyby się Twojemu zespołowi: repozytorium kodu, tracker zadań, baza danych, dokumentacja?</li>
+        </ul>
+      </details>
+    </section>
+
+    <!-- ===================== 5b ===================== -->
+    <section class="ex" id="ex-5b" data-i="7" data-group="Moduły 5–6: MCP" data-short="5b" data-title="Komu ufasz?">
+      <div class="ex-head">
+        <span class="ex-num">5b</span>
+        <h2>Komu ufasz?</h2>
+        <span class="ex-progress" data-progress></span>
+      </div>
+      <p class="goal">Cel: zanim podłączysz cudzy serwer, wiesz, co mówi on modelowi. Ograniczasz, co agent może wywołać, po stronie klienta i po stronie serwera.</p>
+      <p>Kolega z supportu poleca serwer znaleziony na GitHubie: „TV-Stats, statystyki adopcji firmware'u, działa od ręki”. Leży w <code>mcp_server/community/tv_stats.py</code>.</p>
+      <p class="note"><b>To celowo niebezpieczny serwer szkoleniowy.</b> Nic nie wysyła poza Twój komputer: wszystko, co dostanie od agenta, zapisuje w <code>data/tv_stats_received.log</code>. Po zadaniu go odłącz.</p>
+
+      <h3>Część A: cudzy serwer</h3>
+      <ul class="steps">
+        <li><label><input type="checkbox"><span>Zanim cokolwiek podłączysz, przeczytaj, co serwer mówi modelowi: <code>python mcp_server/smoke.py mcp_server/community/tv_stats.py</code>. Czytaj opis narzędzia w całości, tak jak przeczyta go model.<span class="hint only-cloud">W chmurze poproś agenta o uruchomienie tego polecenia z <code>python3</code> i pokazanie całego wyniku.</span></span></label></li>
+        <li><label><input type="checkbox"><span>Zapisz poniżej wszystko, co jest podejrzane w opisie i parametrach.</span></label></li>
+      </ul>
+      <textarea data-note="poison-5b" aria-label="Co jest podejrzane w serwerze TV-Stats" placeholder="Co znalazłem w opisie, dlaczego to problem, kto to zobaczy…"></textarea>
+      <span class="saved" data-saved="poison-5b"></span>
+      <ul class="steps">
+        <li><label><input type="checkbox"><span>Podłącz go jako drugi serwer o nazwie <code>tv-stats</code>, tak jak w 5a, ze ścieżką <code>mcp_server/community/tv_stats.py</code>. Nowa sesja agenta.<span class="hint only-cloud">W chmurze dopisz wpis w <code>.mcp.json</code> w forku na GitHubie i zacznij nową sesję.</span></span></label></li>
+        <li><label><input type="checkbox"><span>Zapytaj: <code>Jak wygląda adopcja firmware'u w EU według tv-stats?</code> Patrz uważnie: czy agent czyta pliki, zanim wywoła narzędzie? Co wpisuje w parametr <code>context</code>?<span class="hint">Przy prośbie o zgodę przeczytaj argumenty. Agent może też zauważyć podstęp i odmówić albo Cię ostrzec. To również wynik, zapisz go.</span></span></label></li>
+        <li><label><input type="checkbox"><span>Sprawdź, co dotarło do serwera: otwórz <code>data/tv_stats_received.log</code>. W prawdziwym serwerze te dane trafiłyby do obcej firmy.<span class="hint only-cloud">Poproś agenta o pokazanie treści tego pliku.</span></span></label></li>
+        <li><label><input type="checkbox"><span>Odłącz <code>tv-stats</code>: usuń jego wpis z konfiguracji (w Cline możesz ustawić <code>"disabled": true</code>).</span></label></li>
+      </ul>
+
+      <h3>Część B: zakres uprawnień do Lumio Ops</h3>
+      <ul class="steps">
+        <li><label><input type="checkbox"><span>Zobacz, co agent może dziś zrobić. Poproś: <code>Ustaw telewizorowi TV-001 firmware 2.9.0.</code><span class="hint only-local">Odśwież <a href="http://localhost:8765/tv/?device=TV-001" target="_blank" rel="noopener">TV-001 w symulatorze</a>: telewizor widzi nową wersję. Serwer MCP i serwer telewizora dzielą stan w <code>data/</code>.</span><span class="hint only-cloud">Poproś agenta o <code>get_device</code> dla TV-001 i sprawdź wersję.</span></span></label></li>
+        <li><label><input type="checkbox"><span>Ogranicz uprawnienia po stronie klienta według instrukcji pod krokami: narzędzia do odczytu bez pytania, <code>set_device_firmware</code> za zgodą, <code>reset_devices</code> zablokowane.</span></label></li>
+        <li><label><input type="checkbox"><span>Nowa sesja. Poproś: <code>Przywróć stan wszystkich telewizorów.</code> Co zrobił agent i co pokazał klient?</span></label></li>
+        <li><label><input type="checkbox"><span>Ogranicz serwer: dopisz do wpisu <code>lumio</code> zmienną <code>"env": {"LUMIO_MCP_READONLY": "1"}</code>. Sprawdź bez agenta: <code>python mcp_server/smoke.py mcp_server/lumio_ops.py --env LUMIO_MCP_READONLY=1</code><span class="hint">Narzędzia zapisujące w ogóle nie są teraz rejestrowane. Agent ich nie zobaczy, nawet w swoim kontekście.</span></span></label></li>
+        <li><label><input type="checkbox"><span>Nowa sesja, <code>/mcp</code> albo panel Cline: ile narzędzi widzi teraz agent? Zapisz, który sposób ograniczania jest pewniejszy i kiedy wystarczy ten drugi.</span></label></li>
+      </ul>
+      <textarea data-note="scope-5b" aria-label="Uprawnienia po stronie klienta i serwera" placeholder="Po stronie klienta: … Po stronie serwera: … Wybrałbym…"></textarea>
+      <span class="saved" data-saved="scope-5b"></span>
+
+      <details class="howto">
+        <summary>Jak ograniczyć uprawnienia w kliencie</summary>
+        <div class="howto-body">
+          <p><b>Claude Code.</b> Reguły dla siebie wpisz w <code>.claude/settings.local.json</code> (git go pomija). Kolejność sprawdzania: najpierw <code>deny</code>, potem <code>ask</code>, na końcu <code>allow</code>. Nazwa reguły to <code>mcp__&lt;serwer&gt;__&lt;narzędzie&gt;</code>, a <code>mcp__lumio</code> oznacza wszystkie narzędzia serwera.</p>
+          <div class="doc">
+            <div class="doc-bar"><span>.claude/settings.local.json</span><button type="button" class="copy" data-copy="cfg-perms">Kopiuj</button></div>
+            <pre id="cfg-perms">{
+  "permissions": {
+    "allow": [
+      "mcp__lumio__list_devices",
+      "mcp__lumio__get_device",
+      "mcp__lumio__pending_update"
+    ],
+    "ask": ["mcp__lumio__set_device_firmware"],
+    "deny": ["mcp__lumio__reset_devices"]
+  }
+}</pre>
+          </div>
+          <p class="only-cloud">W chmurze plik lokalny nie przetrwa sesji. Dopisz sekcję <code>permissions</code> do <code>.claude/settings.json</code> w swoim forku na GitHubie i zacznij nową sesję.</p>
+          <p><b>Cline.</b> W ustawieniach MCP wpisz do <code>autoApprove</code> tylko narzędzia do odczytu: <code>["list_devices", "get_device", "pending_update"]</code>. Pozostałe Cline wykona dopiero po Twojej zgodzie. Cline nie ma listy narzędzi zablokowanych: jeśli narzędzie nie może się wykonać nigdy, wyłącz je po stronie serwera.</p>
+        </div>
+      </details>
+
+      <details class="after">
+        <summary>Po zadaniu: do przemyślenia</summary>
+        <ul>
+          <li>Opis narzędzia trafia do kontekstu modelu, a z nim do dostawcy modelu i do zapisów sesji. Co w nim nie powinno się znaleźć?</li>
+          <li>Lumio Ops oznacza narzędzia podpowiedziami <code>readOnlyHint</code> i <code>destructiveHint</code>. Czy ufasz takiej podpowiedzi, gdy serwer napisał ktoś obcy?</li>
+          <li>Kto w Twojej firmie powinien zatwierdzać serwery MCP, zanim zespół zacznie ich używać?</li>
+        </ul>
+      </details>
+    </section>
+
+    <!-- ===================== 6a ===================== -->
+    <section class="ex" id="ex-6a" data-i="8" data-group="Moduły 5–6: MCP" data-short="6a" data-title="Własny serwer: katalog aplikacji">
+      <div class="ex-head">
+        <span class="ex-num">6a</span>
+        <h2>Własny serwer: katalog aplikacji</h2>
+        <span class="ex-progress" data-progress></span>
+      </div>
+      <p class="goal">Cel: od potrzeby do własnego serwera MCP podpiętego do agenta. Najpierw decyzja i projekt interfejsu, potem kod, na końcu sprawdzenie, czy agent używa narzędzi tak, jak chciałeś.</p>
+
+      <div class="doc">
+        <div class="doc-bar"><span>Mail z supportu</span><button type="button" class="copy" data-copy="mail-6a">Kopiuj</button></div>
+        <div class="prose" id="mail-6a">Od: Marek Zięba, Support 2. linii
+Temat: Dlaczego nie widzę aplikacji?
+
+Cześć,
+
+codziennie dostajemy pytania „dlaczego na moim telewizorze nie ma aplikacji X”. Za każdym razem ktoś z backendu sprawdza region, wersję firmware'u i model. Chcielibyśmy pytać o to agenta. Najczęstsze pytania:
+
+- Jakie aplikacje widzi telewizor TV-002?
+- Dlaczego TV-002 nie widzi Music Box?
+- Które telewizory widzą KinoNet?
+
+Dzięki!
+Marek</div>
+      </div>
+
+      <h3>Kroki</h3>
+      <ul class="steps">
+        <li><label><input type="checkbox"><span>Gotowy serwer czy własny? Zdecyduj dla każdej potrzeby poniżej i zapisz, dlaczego: (1) PR-y i zgłoszenia na GitHubie, (2) pytania supportu o katalog aplikacji Lumio, (3) dokumentacja biblioteki standardowej Pythona, (4) baza danych zespołu, do której wystarczy czytanie.<span class="hint">Gotowy, gdy system jest popularny i ktoś utrzymuje do niego serwer. Własny, gdy logika jest Wasza albo gotowy serwer daje dużo więcej uprawnień, niż potrzebujesz.</span></span></label></li>
+      </ul>
+      <textarea data-note="decide-6a" aria-label="Gotowy czy własny serwer" placeholder="(1) … bo … (2) … bo …"></textarea>
+      <span class="saved" data-saved="decide-6a"></span>
+      <ul class="steps">
+        <li><label><input type="checkbox"><span>Zaprojektuj interfejs, zanim powstanie kod: nazwy narzędzi, parametry z przykładowym formatem, opis (kiedy użyć, kiedy nie, co zwraca) i komunikaty błędów. Na pierwsze pytanie z maila wystarczy jedno narzędzie.<span class="hint">Dobre nazwy to czasownik i pojęcie z domeny, np. <code>list_apps_for_device</code>. Pamiętaj, że agent zobaczy też narzędzia z <code>lumio</code>: nazwy nie mogą się mylić.</span></span></label></li>
+      </ul>
+      <textarea data-note="design-6a" aria-label="Projekt interfejsu narzędzi" placeholder="nazwa(parametr: format) — opis, co zwraca, jakie błędy"></textarea>
+      <span class="saved" data-saved="design-6a"></span>
+      <ul class="steps">
+        <li><label><input type="checkbox"><span>Nowa sesja agenta. Poproś o serwer <code>mcp_server/katalog.py</code> z jednym narzędziem według Twojego projektu:
+          <pre class="snippet">Utwórz serwer MCP mcp_server/katalog.py na wzór mcp_server/lumio_ops.py
+(te same importy z zapasowym mcp_lite). Na razie jedno narzędzie:
+&lt;wklej swój projekt: nazwa, parametry, opis, błędy&gt;
+Narzędzie ma korzystać z backend/catalog.py i backend/registry.py.
+Niczego nie zmieniaj w backend/.</pre>
+          <span class="hint">Szkielet serwera znajdziesz pod krokami. Przeczytaj kod, zanim pójdziesz dalej: gdzie jest rejestracja narzędzia, skąd biorą się opis i schemat parametrów, co zwraca funkcja.</span></span></label></li>
+        <li class="required"><label><input type="checkbox"><span>Sprawdź bez agenta: <code>python mcp_server/smoke.py mcp_server/katalog.py</code>, potem wywołaj narzędzie z <code>--call</code> dla <code>TV-002</code> i dla nieistniejącego urządzenia.<span class="req">Wymagane</span><span class="hint">Opis i parametry wyglądają tak, jak zaprojektowałeś? Błąd mówi, co zrobić dalej?</span></span></label></li>
+        <li><label><input type="checkbox"><span>Podłącz serwer jako <code>katalog</code> obok <code>lumio</code>.<span class="hint only-local">Dopisz drugi wpis w <code>.mcp.json</code> albo w ustawieniach Cline i zacznij nową sesję.</span><span class="hint only-cloud">Wpis <code>katalog</code> masz w <code>.mcp.json</code> od zadania 5a. Wpisz <code>/mcp</code> i połącz serwer ponownie. Jeśli to nie działa, poproś agenta o commit i push, a nową sesję zacznij na tej gałęzi.</span></span></label></li>
+        <li><label><input type="checkbox"><span>Zadaj agentowi pierwsze pytanie z maila. Czy wybrał Twoje narzędzie, czy na przykład czytał pliki z <code>fixtures/</code>?</span></label></li>
+        <li><label><input type="checkbox"><span>Eksperyment: zmień nazwę narzędzia na <code>get_data</code>, opis na <code>Returns data.</code>, a parametr na <code>id</code>. Nowa sesja, to samo pytanie. Co się zmieniło? Przywróć swoją wersję.</span></label></li>
+        <li><label><input type="checkbox"><span>Dodaj narzędzie na drugie pytanie z maila: dlaczego dana aplikacja nie jest widoczna na danym telewizorze. Powody to region, minimalna wersja firmware'u, brak pakietu dla API modelu albo aplikacja ukryta. Sprawdź je przez <code>smoke.py</code>, potem agentem.<span class="hint">Najpierw projekt w polu powyżej, dopiero potem kod. Nieznana aplikacja to dobry moment na błąd, który podpowiada poprawne identyfikatory.</span></span></label></li>
+        <li><label><input type="checkbox"><span>Poproś o testy jednostkowe funkcji narzędzi w <code>tests/</code>. Narzędzie to zwykła funkcja Pythona, więc testujesz ją bez agenta i bez protokołu. Wszystkie testy zielone, diff przejrzany, commit.</span></label></li>
+      </ul>
+
+      <details class="howto">
+        <summary>Szkielet serwera MCP</summary>
+        <div class="howto-body">
+          <pre class="snippet">"""Katalog: which apps a TV shows, and why."""
+
+import sys
+from pathlib import Path
+from typing import Annotated
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+try:
+    from mcp.server.mcpserver import MCPServer
+    from mcp.server.mcpserver.exceptions import ToolError
+    from pydantic import Field
+except ImportError:
+    from mcp_lite import MCPServer, ToolError, Field
+
+from backend.catalog import get_apps_for_device
+from backend.registry import DeviceNotFound, DeviceRegistry
+from backend.storage import JsonStore
+
+store = JsonStore()
+registry = DeviceRegistry(store)
+mcp = MCPServer("katalog")
+
+
+@mcp.tool()
+def list_apps_for_device(
+    device_id: Annotated[str, Field(description="Identyfikator telewizora, np. TV-002.")],
+):
+    """Aplikacje widoczne na ekranie głównym telewizora, w kolejności z ekranu.
+
+    Użyj, gdy pytanie brzmi „co widzi telewizor X”. Zwraca id, nazwę i wersję każdej aplikacji.
+    """
+    try:
+        device = registry.get(device_id)
+    except DeviceNotFound:
+        raise ToolError("Nie ma urządzenia %s. Listę urządzeń zwraca list_devices z serwera lumio." % device_id)
+    return {"device_id": device_id, "apps": get_apps_for_device(store, device)}
+
+
+if __name__ == "__main__":
+    mcp.run(transport="stdio")</pre>
+          <ul>
+            <li><b>Rejestracja:</b> dekorator <code>@mcp.tool()</code>. Nazwa narzędzia to nazwa funkcji, opis to docstring, schemat parametrów powstaje z adnotacji typów.</li>
+            <li><b>Opis parametru:</b> <code>Annotated[typ, Field(description=...)]</code>. Parametr z wartością domyślną jest opcjonalny.</li>
+            <li><b>Wynik:</b> słownik lub lista trafia do agenta jako JSON, napis jako tekst.</li>
+            <li><b>Błąd dla agenta:</b> <code>ToolError</code> z komunikatem, co zrobić dalej. Inne wyjątki agent zobaczy tylko jako „Error executing tool…”.</li>
+            <li><b>Nigdy <code>print</code>.</b> Standardowe wyjście należy do protokołu. Logi pisz na <code>sys.stderr</code>.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="after">
+        <summary>Po zadaniu: do przemyślenia</summary>
+        <ul>
+          <li>Co zrobił agent z narzędziem <code>get_data</code>? Które słowo w Twoim opisie najbardziej pomagało mu wybrać właściwe narzędzie?</li>
+          <li>Czy Twój projekt z pola powyżej przetrwał zderzenie z agentem? Co zmieniłeś po pierwszej rozmowie?</li>
+          <li>Które dane z odpowiedzi narzędzia agent naprawdę wykorzystał, a które tylko zajmowały miejsce?</li>
+        </ul>
+      </details>
+    </section>
+
+    <!-- ===================== 6b ===================== -->
+    <section class="ex" id="ex-6b" data-i="9" data-group="Moduły 5–6: MCP" data-short="6b" data-title="Kombajn czy małe narzędzia?">
+      <div class="ex-head">
+        <span class="ex-num">6b</span>
+        <h2>Kombajn czy małe narzędzia?</h2>
+        <span class="ex-progress" data-progress></span>
+      </div>
+      <p class="goal">Cel: wiesz, ile kontekstu kosztują opisy narzędzi i ich wyniki, i umiesz uzasadnić, dlaczego kilka małych, dobrze opisanych narzędzi działa lepiej niż jedno rozbudowane.</p>
+      <p>Inny zespół udostępnił całe API Lumio za jednym narzędziem <code>lumio(action, params)</code> z długą instrukcją w opisie: <code>mcp_server/examples/kombajn.py</code>.</p>
+
+      <h3>Kroki</h3>
+      <ul class="steps">
+        <li><label><input type="checkbox"><span>Porównaj trzy serwery przez <code>smoke.py</code>: <code>examples/kombajn.py</code>, <code>lumio_ops.py</code> i swój <code>katalog.py</code>. Dla każdego zapisz liczbę narzędzi i koszt definicji z ostatniej linii raportu.</span></label></li>
+      </ul>
+      <textarea data-note="cost-6b" aria-label="Porównanie kosztu kontekstu" placeholder="kombajn: … narzędzi, … tokenów; lumio: …; katalog: …"></textarea>
+      <span class="saved" data-saved="cost-6b"></span>
+      <ul class="steps">
+        <li><label><input type="checkbox"><span>Podłącz <code>kombajn</code> zamiast <code>lumio</code> (wpis <code>lumio</code> usuń albo wyłącz). Nowa sesja. Zadaj pytanie z 5a: <code>Które telewizory w regionie EU mają firmware starszy niż 2.9.0?</code> Porównaj liczbę wywołań, błędne próby i to, kto filtrował dane.</span></label></li>
+        <li><label><input type="checkbox"><span>Spróbuj w ustawieniach uprawnień zezwolić kombajnowi na odczyt, a zabronić <code>report</code> i <code>ota_download</code>. Da się?</span></label></li>
+        <li><label><input type="checkbox"><span>Zobacz koszt w kliencie. W Claude Code wpisz <code>/context</code> i znajdź narzędzia MCP. W Cline wszystkie definicje narzędzi idą do modelu przy każdym zapytaniu.<span class="hint">Claude Code domyślnie ładuje narzędzia MCP na żądanie: w kontekście są najpierw same nazwy, a pełna definicja dopiero wtedy, gdy agent jej potrzebuje. Tym bardziej nazwa i pierwsze zdanie opisu muszą jasno mówić, do czego narzędzie służy.</span></span></label></li>
+        <li><label><input type="checkbox"><span>Odchudź swój serwer <code>katalog</code>. Skróć opisy, nie tracąc tego, kiedy użyć narzędzia, jaki format mają parametry i co zwraca. Usuń z wyników pola, których agent nie używa: wynik też zajmuje kontekst. Zmierz <code>smoke.py</code> przed zmianą i po niej.</span></label></li>
+        <li><label><input type="checkbox"><span>Nowa sesja. Zadaj wszystkie trzy pytania z maila w 6a. Agent nadal trafia w dobre narzędzia? Testy zielone, commit.</span></label></li>
+      </ul>
+
+      <details class="after">
+        <summary>Po zadaniu: do przemyślenia</summary>
+        <ul>
+          <li>Kombajn ma tylko jedno narzędzie. Dlaczego mimo to nie jest tańszy w kontekście?</li>
+          <li>Co tracisz w uprawnieniach i w czytelności zgód, gdy odczyt i zapis siedzą w jednym narzędziu?</li>
+          <li>Ile narzędzi ze wszystkich podłączonych serwerów agent naprawdę wykorzystał dzisiaj? Które serwery odłączyłbyś na co dzień?</li>
+        </ul>
+      </details>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  Postęp i notatki zapisują się tylko w tej przeglądarce, na tym urządzeniu. Wersja strony z 28.10.2026.
+</footer>
+
+<script>
+  // ---------- Konfiguracja: uzupełnij przed publikacją ----------
+  var CONFIG = {
+    brand: "Lumio",
+    repoUrl: "https://github.com/Majkee/tv-backend",
+    pogodaRepoUrl: "https://github.com/Majkee/pogoda-start",
+    reviewBranch: "review/support-history",
+    skills: {
+      grill: "/grill-with-docs",
+      grilling: "/grilling",
+      spec: "/to-spec",
+      tickets: "/to-tickets",
+      implement: "/implement",
+      review: "/code-review",
+      tdd: "/tdd",
+      diagnose: "/diagnosing-bugs",
+      triage: "/triage",
+      check: "/sprawdz-srodowisko"
+    }
+  };
+  // ----------------------------------------------------------------
+
+  (function () {
+    var KEY = "m3-zadania-v1";
+    var state = { checks: {}, notes: {}, path: "cloud" };
+
+    function load() {
+      try {
+        var raw = window.localStorage.getItem(KEY);
+        if (raw) {
+          var s = JSON.parse(raw);
+          state.checks = s.checks || {};
+          state.notes = s.notes || {};
+          state.path = s.path === "local" ? "local" : "cloud";
+        }
+      } catch (e) { /* brak dostępu do pamięci przeglądarki: działamy bez zapisu */ }
+    }
+    function save() {
+      try { window.localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+    }
+
+    // Konfiguracja w treści
+    document.querySelectorAll("[data-brand]").forEach(function (el) { el.textContent = CONFIG.brand; });
+    document.querySelectorAll("a[data-repo]").forEach(function (a) { a.href = CONFIG.repoUrl; });
+    document.querySelectorAll("a[data-repo-pogoda]").forEach(function (a) { a.href = CONFIG.pogodaRepoUrl; });
+    document.querySelectorAll("a[data-compare]").forEach(function (a) {
+      a.href = CONFIG.repoUrl.replace(/\/$/, "") + "/compare/main..." + CONFIG.reviewBranch;
+    });
+    document.querySelectorAll("code[data-skill]").forEach(function (c) {
+      c.textContent = CONFIG.skills[c.getAttribute("data-skill")] || c.getAttribute("data-skill");
+    });
+
+    load();
+
+    var sections = Array.prototype.slice.call(document.querySelectorAll("section.ex"));
+
+    // Identyfikatory kroków
+    sections.forEach(function (sec) {
+      var boxes = sec.querySelectorAll('ul.steps input[type="checkbox"]');
+      Array.prototype.forEach.call(boxes, function (box, i) {
+        var id = sec.id + "-" + i;
+        box.dataset.id = id;
+        box.checked = !!state.checks[id];
+        box.addEventListener("change", function () {
+          if (box.checked) state.checks[id] = true; else delete state.checks[id];
+          save();
+          render();
+        });
+      });
+    });
+
+    // Paski postępu i spis treści
+    var barsEl = document.getElementById("bars");
+    var labelsEl = document.getElementById("barLabels");
+    var tocEl = document.getElementById("toc");
+    barsEl.style.gridTemplateColumns = "repeat(" + sections.length + ", 1fr)";
+    labelsEl.style.gridTemplateColumns = "repeat(" + sections.length + ", 1fr)";
+    var lastGroup = null;
+    sections.forEach(function (sec) {
+      var i = sec.getAttribute("data-i");
+      var group = sec.getAttribute("data-group");
+      if (group && group !== lastGroup) {
+        var gli = document.createElement("li");
+        gli.className = "toc-group";
+        gli.textContent = group;
+        tocEl.appendChild(gli);
+        lastGroup = group;
+      }
+      var bar = document.createElement("a");
+      bar.className = "bar";
+      bar.href = "#" + sec.id;
+      bar.setAttribute("data-i", i);
+      bar.setAttribute("aria-label", sec.getAttribute("data-title"));
+      bar.innerHTML = '<span class="fill"></span>';
+      barsEl.appendChild(bar);
+
+      var lab = document.createElement("span");
+      lab.textContent = sec.getAttribute("data-short");
+      labelsEl.appendChild(lab);
+
+      var li = document.createElement("li");
+      var a = document.createElement("a");
+      a.href = "#" + sec.id;
+      a.innerHTML = '<span class="sw" style="background: var(--c' + i + ')"></span><span></span><span class="count"></span>';
+      a.children[1].textContent = sec.getAttribute("data-short") === "Start" ? "Przygotowanie" : sec.getAttribute("data-short") + ". " + sec.getAttribute("data-title");
+      li.appendChild(a);
+      tocEl.appendChild(li);
+    });
+
+    function visibleBoxes(sec) {
+      return Array.prototype.filter.call(sec.querySelectorAll('ul.steps input[type="checkbox"]'), function (b) {
+        return b.closest(state.path === "cloud" ? ".only-local" : ".only-cloud") === null;
+      });
+    }
+
+    function render() {
+      var totalAll = 0, totalDone = 0;
+      var bars = barsEl.children, tocLinks = tocEl.querySelectorAll("li:not(.toc-group) > a");
+      sections.forEach(function (sec, idx) {
+        var boxes = visibleBoxes(sec);
+        var done = boxes.filter(function (b) { return b.checked; }).length;
+        var all = boxes.length;
+        totalAll += all; totalDone += done;
+        var pct = all ? Math.round(done / all * 100) : 0;
+        bars[idx].querySelector(".fill").style.height = pct + "%";
+        bars[idx].setAttribute("title", sec.getAttribute("data-title") + ": " + done + " z " + all);
+        tocLinks[idx].querySelector(".count").textContent = done + "/" + all;
+        tocLinks[idx].classList.toggle("done", all > 0 && done === all);
+        sec.querySelector("[data-progress]").textContent = done + " z " + all + " kroków";
+      });
+      document.getElementById("totalDone").textContent = totalDone;
+      document.getElementById("totalAll").textContent = totalAll;
+    }
+
+    // Wybór ścieżki
+    function applyPath() {
+      document.body.setAttribute("data-path", state.path);
+      document.getElementById("path-" + state.path).checked = true;
+    }
+    document.querySelectorAll('input[name="path"]').forEach(function (r) {
+      r.addEventListener("change", function () {
+        state.path = r.value;
+        save();
+        applyPath();
+        render();
+      });
+    });
+
+    // Notatki
+    document.querySelectorAll("textarea[data-note]").forEach(function (ta) {
+      var key = ta.getAttribute("data-note");
+      var info = document.querySelector('[data-saved="' + key + '"]');
+      ta.value = state.notes[key] || "";
+      var t;
+      ta.addEventListener("input", function () {
+        state.notes[key] = ta.value;
+        clearTimeout(t);
+        t = setTimeout(function () {
+          save();
+          if (info) info.textContent = "Zapisano w tej przeglądarce";
+        }, 400);
+      });
+    });
+
+    // Kopiowanie
+    function fallbackCopy(text) {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch (e) {}
+      document.body.removeChild(ta);
+      return ok;
+    }
+    document.querySelectorAll("button.copy").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var el = document.getElementById(btn.getAttribute("data-copy"));
+        var text = el ? el.innerText : "";
+        function done(ok) {
+          btn.textContent = ok ? "Skopiowano" : "Zaznacz i skopiuj ręcznie";
+          if (ok) btn.classList.add("ok");
+          setTimeout(function () { btn.textContent = "Kopiuj"; btn.classList.remove("ok"); }, 1800);
+        }
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(fallbackCopy(text)); });
+        } else {
+          done(fallbackCopy(text));
+        }
+      });
+    });
+
+    // Reset
+    document.getElementById("reset").addEventListener("click", function () {
+      if (!window.confirm("Wyczyścić zaznaczone kroki i notatki w tej przeglądarce?")) return;
+      state.checks = {};
+      state.notes = {};
+      save();
+      document.querySelectorAll('ul.steps input[type="checkbox"]').forEach(function (b) { b.checked = false; });
+      document.querySelectorAll("textarea[data-note]").forEach(function (ta) { ta.value = ""; });
+      document.querySelectorAll("[data-saved]").forEach(function (s) { s.textContent = ""; });
+      render();
+    });
+
+    applyPath();
+    render();
+  })();
+</script>
+</body>
+</html>
