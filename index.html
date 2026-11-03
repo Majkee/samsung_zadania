@@ -386,9 +386,32 @@
   @media (max-width: 560px) {
     .toc ol { grid-template-columns: 1fr; }
   }
+
+  /* ---------- Zakładki stron ---------- */
+  .sitetabs { --st-bg: #FFFFFF; --st-ink: #18202D; --st-muted: #5B6578; --st-line: #D2D8E1; --st-accent: #2B55D6;
+    background: var(--st-bg); border-bottom: 1px solid var(--st-line); padding-top: env(safe-area-inset-top, 0px); }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .sitetabs { --st-bg: #1A2231; --st-ink: #E4E8EF; --st-muted: #98A3B5; --st-line: #2B3547; --st-accent: #7E9DFF; }
+  }
+  :root[data-theme="dark"] .sitetabs { --st-bg: #1A2231; --st-ink: #E4E8EF; --st-muted: #98A3B5; --st-line: #2B3547; --st-accent: #7E9DFF; }
+  .sitetabs-in { max-width: 1320px; margin: 0 auto; display: flex; gap: 22px; overflow-x: auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .sitetabs a { flex: none; font: 600 15px/1.2 "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+    color: var(--st-muted); text-decoration: none; padding: 15px 2px 12px; border-bottom: 3px solid transparent; white-space: nowrap; }
+  .sitetabs a:hover { color: var(--st-ink); }
+  .sitetabs a[aria-current="page"] { color: var(--st-ink); border-bottom-color: var(--st-accent); }
+  @media (max-width: 560px) { .sitetabs .st-long { display: none; } }
+  .sitetabs a:focus-visible { outline: 3px solid var(--st-accent); outline-offset: -3px; border-radius: 4px; }
 </style>
 </head>
 <body data-path="cloud">
+<nav class="sitetabs" aria-label="Strony">
+  <div class="sitetabs-in">
+    <a href="index.html" aria-current="page">Zadania</a>
+    <a href="konfiguracja.html">Konfiguracja<span class="st-long"> Software Factory</span></a>
+    <a href="mapa.html">Mapa<span class="st-long"> Software Factory</span></a>
+  </div>
+</nav>
 
 <header class="hero">
   <div>

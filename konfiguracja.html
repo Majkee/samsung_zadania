@@ -1,0 +1,831 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>body { margin: 0; } [hidden] { display: none !important; } img { max-width: 100%; }</style>
+<title>Konfiguracja Software Factory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,750&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: runbook — sticky phase rail on the left (desktop), one reading column; each phase is a checklist card set; settings paths shown as GitHub-style breadcrumbs. */
+:root {
+  --bg: #f3f5f7;
+  --surface: #ffffff;
+  --sunken: #e9edf1;
+  --ink: #15202b;
+  --muted: #56636f;
+  --line: #d3dae1;
+  --accent: #0b7a70;
+  --accent-ink: #ffffff;
+  --accent-soft: #d8efec;
+  --warn: #9a5b00;
+  --warn-soft: #fbefd9;
+  --bad: #b4232c;
+  --bad-soft: #fbe3e4;
+  --good: #1f7a3a;
+  --code-bg: #0f1720;
+  --code-ink: #dbe4ec;
+  --code-dim: #7f8e9b;
+  --code-acc: #5eead4;
+  --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1317; --surface: #151d23; --sunken: #1c262d; --ink: #e5ebef; --muted: #96a4ae; --line: #2a3740;
+    --accent: #3fc9b7; --accent-ink: #062320; --accent-soft: #123a36; --warn: #f0b45a; --warn-soft: #3a2a10;
+    --bad: #f2777e; --bad-soft: #3d1a1d; --good: #6ad08a; --code-bg: #0a0f13; --code-ink: #dbe4ec; --code-dim: #7f8e9b; --code-acc: #5eead4;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1317; --surface: #151d23; --sunken: #1c262d; --ink: #e5ebef; --muted: #96a4ae; --line: #2a3740;
+  --accent: #3fc9b7; --accent-ink: #062320; --accent-soft: #123a36; --warn: #f0b45a; --warn-soft: #3a2a10;
+  --bad: #f2777e; --bad-soft: #3d1a1d; --good: #6ad08a; --code-bg: #0a0f13; --code-ink: #dbe4ec; --code-dim: #7f8e9b; --code-acc: #5eead4;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 16px/1.6 var(--f-body); }
+a { color: var(--accent); }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; line-height: 1.15; margin: 0; }
+h1 { font-size: clamp(2rem, 4.5vw, 3rem); font-weight: 750; letter-spacing: -0.02em; }
+h2 { font-size: 1.6rem; font-weight: 750; letter-spacing: -0.01em; }
+h3 { font-size: 1.08rem; font-weight: 600; font-family: var(--f-body); }
+p { margin: 0; }
+code, kbd { font-family: var(--f-mono); font-size: 0.88em; }
+:not(pre) > code { background: var(--sunken); padding: 0.08em 0.38em; border-radius: 5px; overflow-wrap: anywhere; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 40px 80px; display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 48px; }
+@media (max-width: 900px) { .wrap { grid-template-columns: minmax(0, 1fr); gap: 28px; padding-block: 24px 64px; } }
+
+/* rail */
+.rail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 24px); align-self: start; display: flex; flex-direction: column; gap: 18px; }
+@media (max-width: 900px) { .rail { position: static; } .rail nav { display: none; } }
+.eyebrow { font: 600 0.72rem/1 var(--f-body); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.meter { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; display: grid; gap: 8px; }
+.meter b { font: 750 1.7rem/1 var(--f-display); font-variant-numeric: tabular-nums; }
+.bar { height: 6px; border-radius: 3px; background: var(--sunken); overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .3s; }
+.meter button { justify-self: start; }
+.rail nav ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; counter-reset: ph; }
+.rail nav a { display: grid; grid-template-columns: 26px 1fr auto; gap: 6px; align-items: center; padding: 6px 8px; border-radius: 7px; color: var(--ink); text-decoration: none; font-size: 0.92rem; }
+.rail nav a:hover { background: var(--sunken); }
+.rail nav a .n { font: 500 0.78rem var(--f-mono); color: var(--muted); }
+.rail nav a .c { font: 500 0.75rem var(--f-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.rail nav a.done .c { color: var(--good); }
+.rail nav .sep { margin: 10px 8px 4px; }
+
+main { display: flex; flex-direction: column; gap: 56px; min-width: 0; }
+.hero { display: grid; gap: 16px; }
+.hero p.lead { font-size: 1.12rem; color: var(--muted); max-width: 64ch; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px; }
+.fact { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 12px; font-size: 0.85rem; }
+
+/* personalize */
+.you { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 20px; display: grid; gap: 14px; }
+.fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 700px) { .fields { grid-template-columns: minmax(0, 1fr); } }
+.field { display: grid; gap: 5px; }
+.field label { font-size: 0.85rem; font-weight: 600; }
+.field input { font: 500 0.95rem var(--f-mono); padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); width: 100%; }
+.field input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.field small { color: var(--muted); font-size: 0.8rem; }
+.derived { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 0.9rem; color: var(--muted); }
+.derived code { color: var(--ink); }
+
+/* phase */
+.phase { display: grid; gap: 18px; scroll-margin-top: 24px; }
+.phase-head { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 16px; align-items: baseline; }
+.phase-head .num { font: 750 1.6rem/1 var(--f-display); color: var(--accent); font-variant-numeric: tabular-nums; grid-row: span 2; }
+.phase-head p { grid-column: 2; color: var(--muted); max-width: 66ch; }
+.path { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; font: 500 0.85rem var(--f-mono); }
+.path span { background: var(--sunken); border: 1px solid var(--line); padding: 2px 8px; border-radius: 6px; }
+.path span + span::before { content: "›"; margin: 0 6px 0 -2px; color: var(--muted); }
+.path span:last-child { background: var(--accent-soft); border-color: transparent; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 18px 20px; display: grid; gap: 12px; min-width: 0; }
+.tasks { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.task { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; padding: 8px 6px; border-radius: 7px; cursor: pointer; align-items: start; }
+.task:hover { background: var(--sunken); }
+.task input { width: 18px; height: 18px; margin: 3px 0 0; accent-color: var(--accent); cursor: pointer; }
+.task input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.task .t { min-width: 0; }
+.task:has(input:checked) .t > strong, .task:has(input:checked) .t > span.main { text-decoration: line-through; text-decoration-color: var(--muted); color: var(--muted); }
+.task .t small { display: block; color: var(--muted); font-size: 0.88rem; margin-top: 2px; }
+.val { font-family: var(--f-mono); font-size: 0.86em; font-weight: 500; background: var(--accent-soft); padding: 0.05em 0.4em; border-radius: 5px; overflow-wrap: anywhere; }
+.no { font-family: var(--f-mono); font-size: 0.86em; font-weight: 500; background: var(--bad-soft); color: var(--bad); padding: 0.05em 0.4em; border-radius: 5px; }
+
+.note { border-radius: var(--r); padding: 12px 16px; font-size: 0.93rem; display: grid; gap: 4px; border: 1px solid transparent; }
+.note.warn { background: var(--warn-soft); border-color: color-mix(in srgb, var(--warn) 35%, transparent); }
+.note.warn strong { color: var(--warn); }
+.note.info { background: var(--accent-soft); }
+.note.bad { background: var(--bad-soft); }
+.note.bad strong { color: var(--bad); }
+
+/* code */
+.code { position: relative; background: var(--code-bg); border-radius: 9px; min-width: 0; }
+.code pre { margin: 0; padding: 14px 16px; padding-right: 84px; overflow-x: auto; color: var(--code-ink); font: 0.86rem/1.6 var(--f-mono); }
+.code .lbl { position: absolute; left: 16px; top: -9px; font: 500 0.7rem var(--f-mono); background: var(--code-bg); color: var(--code-dim); padding: 1px 7px; border-radius: 4px; }
+.code pre .c { color: var(--code-dim); }
+.code pre .p { color: var(--code-acc); user-select: none; }
+.copy { position: absolute; top: 8px; right: 8px; font: 500 0.75rem var(--f-body); background: #ffffff14; color: var(--code-ink); border: 1px solid #ffffff2a; border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+.copy:hover { background: #ffffff26; }
+.copy:focus-visible { outline: 2px solid var(--code-acc); }
+
+table { border-collapse: collapse; width: 100%; font-size: 0.92rem; }
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 9px; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 600; background: var(--sunken); }
+tr:last-child td { border-bottom: 0; }
+td:first-child { white-space: nowrap; }
+
+button.btn { font: 600 0.85rem var(--f-body); padding: 7px 13px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+button.btn:hover { background: var(--sunken); }
+button.btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button.btn.danger { color: var(--bad); }
+
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.tabs button[aria-selected="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+/* labels */
+.lab { display: inline-flex; align-items: center; font: 600 0.76rem/1 var(--f-mono); padding: 4px 9px; border-radius: 999px; border: 1px solid; white-space: nowrap; }
+
+/* timeline */
+.flow { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; counter-reset: f; }
+.flow li { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; position: relative; padding-bottom: 16px; }
+.flow li::before { counter-increment: f; content: counter(f); width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--accent); color: var(--accent); font: 600 0.8rem/24px var(--f-mono); text-align: center; background: var(--surface); z-index: 1; }
+.flow li::after { content: ""; position: absolute; left: 13px; top: 28px; bottom: 0; width: 2px; background: var(--line); }
+.flow li:last-child::after { display: none; }
+.flow .who { font: 600 0.78rem var(--f-mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.flow .row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 4px; }
+
+.ticket { border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: grid; gap: 12px; background: var(--bg); min-width: 0; }
+.ticket-head { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; }
+.ticket-head .nm { font-weight: 600; }
+.tpl { font: 600 0.72rem/1 var(--f-mono); padding: 4px 8px; border-radius: 5px; background: var(--sunken); border: 1px solid var(--line); color: var(--muted); }
+.fld { display: grid; gap: 4px; min-width: 0; }
+.fl { font-size: 0.8rem; font-weight: 600; color: var(--muted); }
+.fl em { font-style: normal; color: var(--bad); }
+.code.sm pre { padding: 10px 84px 10px 14px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.expect { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 0.9rem; }
+details.more { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); }
+details.more > summary { cursor: pointer; padding: 14px 18px; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 10px; }
+details.more > summary::-webkit-details-marker { display: none; }
+details.more > summary::after { content: "+"; font: 500 1.2rem/1 var(--f-mono); color: var(--muted); }
+details.more[open] > summary::after { content: "–"; }
+details.more > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: var(--r); }
+details.more > .body { padding: 0 18px 18px; display: grid; gap: 12px; }
+
+.search { font: 0.95rem var(--f-body); padding: 9px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); width: 100%; max-width: 420px; }
+.search:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.kill { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px; align-items: center; background: var(--bad-soft); border-radius: var(--r); padding: 18px 20px; }
+.kill .sw { width: 58px; height: 32px; border-radius: 16px; background: var(--bad); position: relative; }
+.kill .sw::after { content: ""; position: absolute; left: 4px; top: 4px; width: 24px; height: 24px; border-radius: 50%; background: var(--surface); }
+.stack { display: grid; gap: 12px; }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 700px) { .two { grid-template-columns: minmax(0, 1fr); } }
+footer { color: var(--muted); font-size: 0.85rem; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+html { scroll-behavior: smooth; }
+
+  /* ---------- Zakładki stron ---------- */
+  .sitetabs { --st-bg: #FFFFFF; --st-ink: #18202D; --st-muted: #5B6578; --st-line: #D2D8E1; --st-accent: #2B55D6;
+    background: var(--st-bg); border-bottom: 1px solid var(--st-line); padding-top: env(safe-area-inset-top, 0px); }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .sitetabs { --st-bg: #1A2231; --st-ink: #E4E8EF; --st-muted: #98A3B5; --st-line: #2B3547; --st-accent: #7E9DFF; }
+  }
+  :root[data-theme="dark"] .sitetabs { --st-bg: #1A2231; --st-ink: #E4E8EF; --st-muted: #98A3B5; --st-line: #2B3547; --st-accent: #7E9DFF; }
+  .sitetabs-in { max-width: 1320px; margin: 0 auto; display: flex; gap: 22px; overflow-x: auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .sitetabs a { flex: none; font: 600 15px/1.2 "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+    color: var(--st-muted); text-decoration: none; padding: 15px 2px 12px; border-bottom: 3px solid transparent; white-space: nowrap; }
+  .sitetabs a:hover { color: var(--st-ink); }
+  .sitetabs a[aria-current="page"] { color: var(--st-ink); border-bottom-color: var(--st-accent); }
+  @media (max-width: 560px) { .sitetabs .st-long { display: none; } }
+  .sitetabs a:focus-visible { outline: 3px solid var(--st-accent); outline-offset: -3px; border-radius: 4px; }
+</style>
+
+</head>
+<body>
+<nav class="sitetabs" aria-label="Strony">
+  <div class="sitetabs-in">
+    <a href="index.html">Zadania</a>
+    <a href="konfiguracja.html" aria-current="page">Konfiguracja<span class="st-long"> Software Factory</span></a>
+    <a href="mapa.html">Mapa<span class="st-long"> Software Factory</span></a>
+  </div>
+</nav>
+<div class="wrap">
+  <aside class="rail" aria-label="Postęp i spis treści">
+    <div class="meter">
+      <span class="eyebrow">Postęp konfiguracji</span>
+      <b id="pct">0%</b>
+      <div class="bar" aria-hidden="true"><i id="pctbar"></i></div>
+      <span id="pctTxt" style="font-size:.85rem;color:var(--muted)">0 z 0 kroków</span>
+      <button class="btn danger" id="reset" type="button">Wyczyść odhaczenia</button>
+      <span id="resetAsk" hidden style="font-size:.85rem">Na pewno? <button class="btn danger" id="resetYes" type="button">Tak, wyczyść</button></span>
+    </div>
+    <nav>
+      <ol id="toc"></ol>
+    </nav>
+  </aside>
+
+  <main>
+    <header class="hero">
+      <span class="eyebrow">Software Factory Starter · GitHub</span>
+      <h1>Konfiguracja fabryki od zera</h1>
+      <p class="lead">Od świeżo sklonowanego repozytorium do pierwszego pull requesta otwartego przez agenta. Kroki idą w kolejności, w jakiej trzeba je zrobić. Na końcu jest szybki test, który sprawdza całą konfigurację w kwadrans.</p>
+      <div class="facts">
+        <span class="fact">Repo publiczne · GitHub Free</span>
+        <span class="fact">ok. 30 minut</span>
+        <span class="fact">Windows, macOS, Linux</span>
+      </div>
+      <div class="note warn">
+        <strong>Repo prywatne?</strong>
+        <span>Na GitHub Free rulesety i ochrona gałęzi w prywatnych repozytoriach nie są egzekwowane. Hamulce na <code>main</code> działałyby tylko na papierze. Do repo prywatnego potrzebujesz GitHub Pro albo organizacji z planem Team. Reszta kroków jest taka sama.</span>
+      </div>
+    </header>
+
+    <section class="you" aria-labelledby="you-h">
+      <h3 id="you-h">Twoje dane</h3>
+      <p style="color:var(--muted);font-size:.93rem">Wpisz swoje dane, a wszystkie polecenia i wartości na stronie dopasują się same. Zostają tylko w tej przeglądarce.</p>
+      <div class="fields">
+        <div class="field">
+          <label for="f-login">Login GitHub</label>
+          <input id="f-login" autocomplete="off" spellcheck="false" value="Majkee">
+          <small>Jak w adresie github.com/<em>login</em></small>
+        </div>
+        <div class="field">
+          <label for="f-repo">Nazwa repozytorium</label>
+          <input id="f-repo" autocomplete="off" spellcheck="false" value="my-factory">
+          <small>Nowe repo na Twoim koncie</small>
+        </div>
+        <div class="field">
+          <label for="f-app">Nazwa aplikacji GitHub</label>
+          <input id="f-app" autocomplete="off" spellcheck="false" value="majkee-factory">
+          <small>Musi być unikalna w całym GitHubie</small>
+        </div>
+      </div>
+      <div class="derived">
+        <span>Repo: <code data-v="full"></code></span>
+        <span>Login bota: <code data-v="bot"></code></span>
+      </div>
+    </section>
+
+    <!-- 0 -->
+    <section class="phase" id="p0" data-title="Zanim zaczniesz">
+      <div class="phase-head"><span class="num">0</span><h2>Zanim zaczniesz</h2><p>Narzędzia na Twoim komputerze i klucz do modelu.</p></div>
+      <div class="card">
+        <ul class="tasks">
+          <li><label class="task"><input type="checkbox" id="c-0-1"><span class="t"><span class="main">Konto GitHub i zainstalowany <code>git</code></span></span></label></li>
+          <li><label class="task"><input type="checkbox" id="c-0-2"><span class="t"><span class="main">GitHub CLI (<code>gh</code>) zalogowane poleceniem <code>gh auth login</code></span><small>Windows: <code>winget install GitHub.cli</code>. Sprawdź: <code>gh auth status</code>.</small></span></label></li>
+          <li><label class="task"><input type="checkbox" id="c-0-3"><span class="t"><span class="main">Node.js 22 lub nowszy</span><small>Sprawdź: <code>node -v</code></small></span></label></li>
+          <li><label class="task"><input type="checkbox" id="c-0-4"><span class="t"><span class="main">Klucz API z console.anthropic.com z ustawionym limitem wydatków</span><small>W Console: Settings → Limits. Ten klucz zapiszesz później jako sekret repo, nigdy w pliku.</small></span></label></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 1 -->
+    <section class="phase" id="p1" data-title="Kod i repozytorium">
+      <div class="phase-head"><span class="num">1</span><h2>Kod i repozytorium</h2><p>Wszystko w terminalu, w katalogu sklonowanego repo. Pliki zmieniasz teraz, bo dopóki nie ma reguł gałęzi, możesz pushować prosto na <code>main</code>.</p></div>
+      <div class="card">
+        <h3>Sprawdź, że kod przechodzi bramkę</h3>
+        <div class="code"><span class="lbl">terminal</span><button class="copy" type="button">Kopiuj</button><pre><span class="p">$ </span>npm ci
+<span class="p">$ </span>npm run check</pre></div>
+        <ul class="tasks">
+          <li><label class="task"><input type="checkbox" id="c-1-1"><span class="t"><span class="main"><code>npm run check</code> kończy się wynikiem <code>Test ratchet OK: 18 tests</code></span><small>Typy, lint, formatowanie i 18 testów są zielone.</small></span></label></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Upewnij się, że masz najnowszą wersję workflow</h3>
+        <p style="color:var(--muted);font-size:.93rem">Dwie poprawki dla repozytoriów publicznych: CI doctor ignoruje przebiegi z forków, a pomocnik <code>@claude</code> używa Twojej aplikacji. Oba polecenia muszą coś wypisać.</p>
+        <div class="code"><span class="lbl">terminal</span><button class="copy" type="button">Kopiuj</button><pre><span class="p">$ </span>git grep -n "head_repository" .github/workflows/agent-ci-doctor.yml
+<span class="p">$ </span>git grep -n "steps.app.outputs.token" .github/workflows/agent-assist.yml</pre></div>
+        <ul class="tasks">
+          <li><label class="task"><input type="checkbox" id="c-1-2"><span class="t"><span class="main">Oba polecenia zwracają linie</span><small>Jeśli któreś nic nie wypisuje, pobierz najnowszą paczkę <code>software-factory-starter.zip</code> z rozmowy.</small></span></label></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Wpisz siebie jako właściciela kodu</h3>
+        <p style="color:var(--muted);font-size:.93rem">Zastąp całą zawartość <code>.github/CODEOWNERS</code> tym tekstem. GitHub będzie wtedy sam prosił Cię o recenzję każdego PR. Przy 0 wymaganych zatwierdzeniach (faza 5) nie blokuje to scalania.</p>
+        <div class="code"><span class="lbl">.github/CODEOWNERS</span><button class="copy" type="button">Kopiuj</button><pre data-tpl># Każdy PR, który dotyka tych ścieżek, automatycznie prosi o Twoją recenzję.
+*                         @{login}
+/tests/                   @{login}
+/.github/                 @{login}
+/.claude/                 @{login}
+/scripts/                 @{login}
+/.factory/                @{login}
+/AGENTS.md                @{login}
+/CODING_STANDARDS.md      @{login}</pre></div>
+        <ul class="tasks">
+          <li><label class="task"><input type="checkbox" id="c-1-3"><span class="t"><span class="main">CODEOWNERS zapisany, nie zawiera już <code>@your-org/maintainers</code></span></span></label></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Wypchnij na GitHub</h3>
+        <div class="tabs" role="tablist" aria-label="Skąd masz repozytorium">
+          <button class="btn" role="tab" type="button" aria-selected="true" aria-controls="t-new" id="tb-new">Nie mam jeszcze repo na GitHubie</button>
+          <button class="btn" role="tab" type="button" aria-selected="false" aria-controls="t-have" id="tb-have">Repo już jest na moim koncie</button>
+        </div>
+        <div id="t-new" role="tabpanel" aria-labelledby="tb-new" class="stack">
+          <p style="font-size:.93rem;color:var(--muted)">Jeśli sklonowałeś repo od kogoś innego, najpierw odłącz stary adres. Polecenie <code>git remote remove origin</code> zwróci błąd, jeśli nie było żadnego adresu, i to jest w porządku.</p>
+          <div class="code"><span class="lbl">terminal</span><button class="copy" type="button">Kopiuj</button><pre data-tpl><span class="p">$ </span>git add -A
+<span class="p">$ </span>git commit -m "Ustaw CODEOWNERS"
+<span class="p">$ </span>git remote remove origin
+<span class="p">$ </span>gh repo create {repo} --public --source . --remote origin --push</pre></div>
+        </div>
+        <div id="t-have" role="tabpanel" aria-labelledby="tb-have" class="stack" hidden>
+          <div class="code"><span class="lbl">terminal</span><button class="copy" type="button">Kopiuj</button><pre><span class="p">$ </span>git add -A
+<span class="p">$ </span>git commit -m "Ustaw CODEOWNERS"
+<span class="p">$ </span>git push origin main</pre></div>
+          <p style="font-size:.93rem;color:var(--muted)">Repo jest prywatne? Zmień widoczność w <b>Settings → General → Danger Zone → Change visibility → Make public</b>.</p>
+        </div>
+        <ul class="tasks">
+          <li><label class="task"><input type="checkbox" id="c-1-4"><span class="t"><span class="main">Kod jest na <code data-v="url"></code>, a repo jest publiczne</span></span></label></li>
+          <li><label class="task"><input type="checkbox" id="c-1-5"><span class="t"><span class="main">W zakładce <b>Actions</b> przebieg <b>CI</b> na <code>main</code> jest zielony</span><small>Bez tego pierwszego przebiegu GitHub nie pokaże checku <code>check</code> przy ustawianiu reguł w fazie 5.</small></span></label></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="phase" id="p2" data-title="Ustawienia ogólne">
+      <div class="phase-head"><span class="num">2</span><h2>Ustawienia ogólne</h2><p>Kto może zakładać zgłoszenia i jak scalać PR-y.</p></div>
+      <div class="path"><span>Settings</span><span>General</span></div>
+      <div class="card">
+        <ul class="tasks">
+          <li><label class="task"><input type="checkbox" id="c-2-1"><span class="t"><span class="main"><b>Features → Issues</b>: zaznaczone, <b>Creation allowed by</b>: <span class="val">Collaborators only</span></span><small>Obcy nie założą zgłoszenia, więc fabryka nie ruszy od cudzej treści.</small></span></label></li>
+          <li><label class="task"><input type="checkbox" id="c-2-2"><span class="t"><span class="main"><b>Features → Pull requests</b>: <span class="val">Collaborators only</span></span></span></label></li>
+          <li><label class="task"><input type="checkbox" id="c-2-3"><span class="t"><span class="main"><b>Pull Requests</b>: zaznaczone tylko <span class="val">Allow squash merging</span></span><small>Odznacz „Allow merge commits” i „Allow rebase merging”. Jedno zgłoszenie daje jeden commit na <code>main</code>.</small></span></label></li>
+          <li><label class="task"><input type="checkbox" id="c-2-4"><span class="t"><span class="main"><span class="val">Automatically delete head branches</span>: zaznaczone</span></span></label></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="phase" id="p3" data-title="GitHub Actions">
+      <div class="phase-head"><span class="num">3</span><h2>GitHub Actions</h2><p>Co może się uruchomić i z jakimi domyślnymi uprawnieniami.</p></div>
+      <div class="path"><span>Settings</span><span>Actions</span><span>General</span></div>
+      <div class="card">
+        <ul class="tasks">
+          <li><label class="task"><input type="checkbox" id="c-3-1"><span class="t"><span class="main"><b>Actions permissions</b>: <span class="val">Allow all actions and reusable workflows</span> → Save</span><small><b>Require actions to be pinned to a full-length commit SHA</b>: <span class="no">odznaczone</span>.</small></span></label></li>
+          <li><label class="task"><input type="checkbox" id="c-3-2"><span class="t"><span class="main"><b>Approval for running fork pull request workflows</b>: <span class="val">Require approval for all external contributors</span> → Save</span></span></label></li>
+          <li><label class="task"><input type="checkbox" id="c-3-3"><span class="t"><span class="main"><b>Workflow permissions</b>: <span class="val">Read repository contents and packages permissions</span> → Save</span><small><b>Allow GitHub Actions to create and approve pull requests</b>: <span class="no">odznaczone</span>. Zapisy idą przez token aplikacji, nie przez <code>GITHUB_TOKEN</code>.</small></span></label></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="phase" id="p4" data-title="Etykiety">
+      <div class="phase-head"><span class="num">4</span><h2>Etykiety</h2><p>Etykiety to panel sterowania fabryki: każda zmiana etykiety uruchamia następne zadanie.</p></div>
+      <div class="path"><span>Actions</span><span>factory: setup labels</span><span>Run workflow</span></div>
+      <div class="card">
+        <ul class="tasks">
+          <li><label class="task"><input type="checkbox" id="c-4-1"><span class="t"><span class="main">Uruchom workflow <b>factory: setup labels</b> (przycisk <b>Run workflow</b> po prawej, potem zielony <b>Run workflow</b>)</span></span></label></li>
+          <li><label class="task"><input type="checkbox" id="c-4-2"><span class="t"><span class="main">W <b>Issues → Labels</b> jest 13 etykiet</span></span></label></li>
+        </ul>
+        <div id="labels" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section class="phase" id="p5" data-title="Reguły gałęzi main">
+      <div class="phase-head"><span class="num">5</span><h2>Reguły gałęzi main</h2><p>Najważniejszy hamulec: nic nie trafi na <code>main</code> bez pull requesta i zielonego CI.</p></div>
+      <div class="path"><span>Settings</span><span>Rules</span><span>Rulesets</span><span>New ruleset</span><span>New branch ruleset</span></div>
+      <div class="card">
+        <ul class="tasks">
+          <li><label class="task"><input type="checkbox" id="c-5-1"><span class="t"><span class="main"><b>Ruleset name</b>: <span class="val">protect-main</span>, <b>Enforcement status</b>: <span class="val">Active</span></span></span></label></li>
+          <li><label class="task"><input type="checkbox" id="c-5-2"><span class="t"><span class="main"><b>Bypass list</b>: <span class="no">pusta</span></span><small>Nikt, także bot, nie omija reguł.</small></span></label></li>
+          <li><label class="task"><input type="checkbox" id="c-5-3"><span class="t"><span class="main"><b>Target branches → Add target</b>: <span class="val">Include default branch</span></span></span></label></li>
+          <li><label class="task"><input type="checkbox" id="c-5-4"><span class="t"><span class="main"><span class="val">Restrict deletions</span> i <span class="val">Block force pushes</span>: zaznaczone</span></span></label></li>
+          <li><label class="task"><input type="checkbox" id="c-5-5"><span class="t"><span class="main"><span class="val">Require a pull request before merging</span>, w dodatkowych ustawieniach:</span><small>Required approvals: <b>0</b> · Allowed merge methods: <b>Squash</b>. <span class="no">Odznaczone</span>: Require review from Code Owners, Require approval of the most recent reviewable push, Require review from specific teams. Każda z tych opcji wymaga zatwierdzenia przez kogoś innego niż autor, więc zablokowałaby Twoje własne PR-y.</small></span></label></li>
+          <li><label class="task"><input type="checkbox" id="c-5-6"><span class="t"><span class="main"><span class="val">Require status checks to pass</span> → <b>Add checks</b> → wpisz <code>check</code> i wybierz pozycję z GitHub Actions</span><small>„Require branches to be up to date before merging” zostaw odznaczone, bo przy kilku PR-ach agentów blokowałoby kolejkę.</small></span></label></li>
+          <li><label class="task"><input type="checkbox" id="c-5-7"><span class="t"><span class="main">Kliknij <b>Create</b></span></span></label></li>
+        </ul>
+        <div class="note info"><strong>Co to oznacza w praktyce</strong><span>GitHub wymusza PR, zielony <code>check</code> i brak force pushy. Twoje zatwierdzenie nie jest wymagane technicznie. Agenci nie mają polecenia scalania, więc PR agenta i tak czeka, aż scalisz go sam. Zanim klikniesz Merge, przeczytaj zmiany. Jeśli kiedyś dojdzie druga osoba z prawem zapisu, podnieś Required approvals do 1.</span></div>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section class="phase" id="p6" data-title="Aplikacja GitHub">
+      <div class="phase-head"><span class="num">6</span><h2>Aplikacja GitHub</h2><p>Tożsamość bota fabryki. Zdarzenia wywołane domyślnym <code>GITHUB_TOKEN</code> nie uruchamiają kolejnych workflow, a zdarzenia z tokenu aplikacji tak. Bez aplikacji łańcuch staje po pierwszym kroku.</p></div>
+      <div class="path"><span>Awatar</span><span>Settings</span><span>Developer settings</span><span>GitHub Apps</span><span>New GitHub App</span></div>
+      <div class="card">
+        <h3>Formularz „Register new GitHub App”</h3>
+        <ul class="tasks">
+          <li><label class="task"><input type="checkbox" id="c-6-1"><span class="t"><span class="main"><b>GitHub App name</b>: <span class="val" data-v="app"></span>, <b>Homepage URL</b>: <span class="val" data-v="url"></span></span></span></label></li>
+          <li><label class="task"><input type="checkbox" id="c-6-2"><span class="t"><span class="main"><b>Webhook → Active</b>: <span class="no">odznacz</span>. Pole Webhook URL zostaje puste</span><small>Póki Active jest zaznaczone, GitHub wymaga adresu URL. Aplikacja nie odbiera webhooków, tylko wydaje tokeny.</small></span></label></li>
+          <li><label class="task"><input type="checkbox" id="c-6-3"><span class="t"><span class="main"><b>Permissions → Repository permissions</b>:</span><small>Contents: <b>Read and write</b> · Issues: <b>Read and write</b> · Pull requests: <b>Read and write</b> · Actions: <b>Read-only</b> · Checks: <b>Read-only</b>. Metadata: Read-only ustawi się sama. Resztę zostaw na „No access”.</small></span></label></li>
+          <li><label class="task"><input type="checkbox" id="c-6-4"><span class="t"><span class="main"><b>Subscribe to events</b>: <span class="no">wszystko odznaczone</span></span></span></label></li>
+          <li><label class="task"><input type="checkbox" id="c-6-5"><span class="t"><span class="main"><b>Where can this GitHub App be installed?</b>: <span class="val">Only on this account</span> → <b>Create GitHub App</b></span></span></label></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Na stronie aplikacji (zakładka General)</h3>
+        <ul class="tasks">
+          <li><label class="task"><input type="checkbox" id="c-6-6"><span class="t"><span class="main">Zanotuj <b>App ID</b> (liczba w sekcji About)</span><small>Nie myl go z Client ID, który zaczyna się od <code>Iv</code>.</small></span></label></li>
+          <li><label class="task"><input type="checkbox" id="c-6-7"><span class="t"><span class="main"><b>Private keys → Generate a private key</b>. Pobierze się plik <code>.pem</code></span><small>Traktuj go jak hasło. Po zapisaniu w sekretach (faza 7) usuń go z folderu Pobrane.</small></span></label></li>
+          <li><label class="task"><input type="checkbox" id="c-6-8"><span class="t"><span class="main">Sprawdź slug: link <b>Public page</b> prowadzi do <code data-v="appurl"></code></span><small>Jeśli końcówka adresu różni się od <code data-v="slug"></code>, popraw nazwę aplikacji w polu na górze tej strony, żeby login bota się zgadzał.</small></span></label></li>
+          <li><label class="task"><input type="checkbox" id="c-6-9"><span class="t"><span class="main"><b>Install App → Install → Only select repositories</b> → <span class="val" data-v="repo"></span> → <b>Install</b></span></span></label></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 7 -->
+    <section class="phase" id="p7" data-title="Sekrety i zmienne">
+      <div class="phase-head"><span class="num">7</span><h2>Sekrety i zmienne</h2><p>W ustawieniach repozytorium, nie aplikacji.</p></div>
+      <div class="path"><span>Repo</span><span>Settings</span><span>Secrets and variables</span><span>Actions</span></div>
+      <div class="two">
+        <div class="card">
+          <h3>Zakładka Secrets → New repository secret</h3>
+          <div class="tbl"><table>
+            <thead><tr><th>Name</th><th>Secret</th></tr></thead>
+            <tbody>
+              <tr><td><code>ANTHROPIC_API_KEY</code></td><td>klucz z console.anthropic.com</td></tr>
+              <tr><td><code>FACTORY_APP_PRIVATE_KEY</code></td><td>cała zawartość pliku <code>.pem</code>, z liniami <code>-----BEGIN…</code> i <code>-----END…</code></td></tr>
+            </tbody>
+          </table></div>
+          <ul class="tasks">
+            <li><label class="task"><input type="checkbox" id="c-7-1"><span class="t"><span class="main">Oba sekrety widać w sekcji <b>Repository secrets</b></span><small>Do „Environment secrets” nic nie wpisuj.</small></span></label></li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Zakładka Variables → New repository variable</h3>
+          <div class="tbl"><table>
+            <thead><tr><th>Name</th><th>Value</th></tr></thead>
+            <tbody>
+              <tr><td><code>FACTORY_APP_ID</code></td><td>App ID z fazy 6</td></tr>
+              <tr><td><code>FACTORY_BOT_LOGIN</code></td><td><code data-v="bot"></code></td></tr>
+              <tr><td><code>FACTORY_MAX_WIP</code></td><td><code>1</code></td></tr>
+              <tr><td><code>FACTORY_MODEL</code></td><td><code>claude-haiku-5-5</code></td></tr>
+            </tbody>
+          </table></div>
+          <ul class="tasks">
+            <li><label class="task"><input type="checkbox" id="c-7-2"><span class="t"><span class="main">Cztery zmienne ustawione</span><small><code>FACTORY_ENABLED</code> jeszcze nie. To ostatni krok.</small></span></label></li>
+          </ul>
+        </div>
+      </div>
+      <div class="note info"><strong>Model Haiku zamiast domyślnego</strong><span>Zmienna <code>FACTORY_MODEL</code> dopisuje <code>--model claude-haiku-5-5</code> do każdego przebiegu agenta: triażu, implementacji, recenzji, poprawek, CI doctora, maintenance i retro. Haiku jest najtańszy i najszybszy, ale słabiej radzi sobie z trudniejszymi zmianami. Jeśli implementacja zacznie często kończyć się <code>ready-for-human</code>, usuń zmienną albo wpisz mocniejszy model, np. <code>claude-sonnet-5-5</code>. Pomocnik <code>@claude</code> nie czyta tej zmiennej i zostaje przy modelu domyślnym.</span></div>
+      <details class="more">
+        <summary>To samo z terminala</summary>
+        <div class="body">
+          <div class="code"><span class="lbl">terminal, w katalogu repo</span><button class="copy" type="button">Kopiuj</button><pre data-tpl><span class="p">$ </span>gh secret set ANTHROPIC_API_KEY
+<span class="p">$ </span>gh secret set FACTORY_APP_PRIVATE_KEY &lt; {slug}.private-key.pem
+<span class="p">$ </span>gh variable set FACTORY_APP_ID --body &lt;App ID&gt;
+<span class="p">$ </span>gh variable set FACTORY_BOT_LOGIN --body "{bot}"
+<span class="p">$ </span>gh variable set FACTORY_MAX_WIP --body 1
+<span class="p">$ </span>gh variable set FACTORY_MODEL --body claude-haiku-5-5</pre></div>
+          <p style="font-size:.9rem;color:var(--muted)">Pierwsze polecenie poprosi o wklejenie klucza. W PowerShellu zamiast <code>&lt;</code> użyj: <code>Get-Content .\plik.pem -Raw | gh secret set FACTORY_APP_PRIVATE_KEY</code>.</p>
+        </div>
+      </details>
+    </section>
+
+
+
+    <!-- 8 -->
+    <section class="phase" id="p8" data-title="Włącz fabrykę">
+      <div class="phase-head"><span class="num">8</span><h2>Włącz fabrykę</h2><p>Od tej chwili agenci reagują na zdarzenia.</p></div>
+      <div class="path"><span>Settings</span><span>Secrets and variables</span><span>Actions</span><span>Variables</span></div>
+      <div class="card">
+        <ul class="tasks">
+          <li><label class="task"><input type="checkbox" id="c-8-1"><span class="t"><span class="main"><b>New repository variable</b>: <code>FACTORY_ENABLED</code> = <span class="val">true</span></span><small>Małymi literami, bez spacji. Każda inna wartość zatrzymuje wszystkich agentów.</small></span></label></li>
+        </ul>
+      </div>
+      <div class="kill">
+        <span class="sw" aria-hidden="true"></span>
+        <div><strong>Wyłącznik awaryjny.</strong> Coś idzie źle? Zmień <code>FACTORY_ENABLED</code> na <code>false</code> (ikona ołówka przy zmiennej). Żaden agent się nie uruchomi, a CI i metryki działają dalej.</div>
+      </div>
+    </section>
+
+    <!-- verify -->
+    <section class="phase" id="v" data-title="Szybka weryfikacja" data-sep="Weryfikacja">
+      <div class="phase-head"><span class="num">✓</span><h2>Szybka weryfikacja</h2><p>Około kwadransa. Testy A i B nie używają modelu i nic nie kosztują. Test C przechodzi cały łańcuch na prawdziwym błędzie z repozytorium.</p></div>
+
+      <div class="card">
+        <h3>A. Token aplikacji i limit pracy (bez modelu)</h3>
+        <div class="path"><span>Actions</span><span>factory: dispatch</span><span>Run workflow</span></div>
+        <ul class="tasks">
+          <li><label class="task"><input type="checkbox" id="c-v-1"><span class="t"><span class="main">Przebieg jest zielony, a w podsumowaniu (Summary) widać <code>In progress: 0, open agent PRs: 0, limit: 1, free slots: 1</code></span><small>To potwierdza App ID, klucz <code>.pem</code>, instalację aplikacji i zmienną limitu. Status Skipped oznacza, że <code>FACTORY_ENABLED</code> nie jest dokładnie <code>true</code>.</small></span></label></li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>B. Wyłącznik awaryjny (bez modelu)</h3>
+        <ul class="tasks">
+          <li><label class="task"><input type="checkbox" id="c-v-2"><span class="t"><span class="main">Ustaw <code>FACTORY_ENABLED</code> = <code>false</code>, uruchom ponownie <b>factory: dispatch</b>: job ma status <b>Skipped</b></span><small>Potem ustaw z powrotem <code>true</code>.</small></span></label></li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>C. Pełny łańcuch na prawdziwym błędzie</h3>
+        <p style="font-size:.93rem">W repo jest celowy błąd: <code>formatCents(-50)</code> zwraca <code>"0.50 PLN"</code> zamiast <code>"-0.50 PLN"</code>. Załóż zgłoszenie testowe nr 1: <b>Issues → New issue → Bug</b> i wklej pola po kolei.</p>
+        <div id="ticket-main"></div>
+        <p style="font-size:.93rem;color:var(--muted)">Obserwuj zakładkę Actions i samo zgłoszenie. Cały przebieg trwa zwykle kilka do kilkunastu minut.</p>
+        <ol class="flow">
+          <li><div><span class="who">formularz</span><div>Zgłoszenie dostaje etykietę</div><div class="row" data-labels="needs-triage"></div></div></li>
+          <li><div><span class="who">factory: triage</span><div>Zdejmuje <code>needs-triage</code>, dodaje komentarz z odtworzeniem błędu i etykietę</div><div class="row" data-labels="ready-for-agent"></div></div></li>
+          <li><div><span class="who">factory: dispatch</span><div>Wolne miejsce w limicie, więc zamienia etykietę na</div><div class="row" data-labels="agent:in-progress"></div></div></li>
+          <li><div><span class="who">factory: implement</span><div>Gałąź <code>agent/&lt;nr&gt;-…</code>, nowy test, który najpierw nie przechodzi, poprawka w <code>src/money.ts</code> i szkic PR z „Closes #&lt;nr&gt;”</div><div class="row" data-labels="agent"></div></div></li>
+          <li><div><span class="who">CI</span><div><code>check</code> zielony</div></div></li>
+          <li><div><span class="who">factory: review</span><div>Komentarz z werdyktem i etykieta</div><div class="row" data-labels="review:passed"></div></div></li>
+          <li><div><span class="who">Ty</span><div><b>Ready for review</b>, przegląd zmian w zakładce Files changed, <b>Squash and merge</b>. Zgłoszenie zamyka się samo.</div></div></li>
+        </ol>
+        <ul class="tasks">
+          <li><label class="task"><input type="checkbox" id="c-v-3"><span class="t"><span class="main">Triaż dodał <code>ready-for-agent</code></span></span></label></li>
+          <li><label class="task"><input type="checkbox" id="c-v-4"><span class="t"><span class="main">Agent otworzył szkic PR z testem i poprawką</span></span></label></li>
+          <li><label class="task"><input type="checkbox" id="c-v-5"><span class="t"><span class="main">Recenzja AI dodała <code>review:passed</code> albo <code>needs-rework</code></span><small>Przy <code>needs-rework</code> sam uruchomi się rework i po nim nowa recenzja. To też poprawny wynik.</small></span></label></li>
+          <li><label class="task"><input type="checkbox" id="c-v-6"><span class="t"><span class="main">Hamulec: dopóki <code>check</code> się nie zakończy na zielono, przycisk Merge jest zablokowany</span></span></label></li>
+          <li><label class="task"><input type="checkbox" id="c-v-7"><span class="t"><span class="main">PR scalony, zgłoszenie zamknięte</span></span></label></li>
+        </ul>
+        <div class="note info"><span>Jeśli A, B i C przeszły, konfiguracja jest kompletna: aplikacja, sekrety, zmienne, etykiety, reguły gałęzi i cały łańcuch agentów działają.</span></div>
+      </div>
+
+      <div class="card">
+        <h3>D. Więcej zgłoszeń testowych</h3>
+        <p style="font-size:.93rem;color:var(--muted)">Przykład typu Bug to zgłoszenie nr 1 z testu C. Każde z poniższych sprawdza inną decyzję triażu. Zgłoszenia 3–5 możesz założyć naraz, bo żadne nie trafi do implementacji. Zgłoszenia 2 i 6 przy limicie 1 zakładaj po kolei, albo naraz, żeby sprawdzić limit pracy (test E).</p>
+        <div class="tabs" role="tablist" aria-label="Typ zgłoszenia" id="tt">
+          <button class="btn" role="tab" type="button" aria-selected="true" aria-controls="tk-feature" id="tt-feature">Feature or change</button>
+          <button class="btn" role="tab" type="button" aria-selected="false" aria-controls="tk-blank" id="tt-blank">Blank</button>
+        </div>
+        <div id="tk-feature" role="tabpanel" aria-labelledby="tt-feature" class="stack"></div>
+        <div id="tk-blank" role="tabpanel" aria-labelledby="tt-blank" class="stack" hidden>
+          <div class="note warn"><strong>Puste zgłoszenia są w tym repo wyłączone</strong><span>Żeby ich użyć, zmień w <code>.github/ISSUE_TEMPLATE/config.yml</code> wartość na <code>blank_issues_enabled: true</code> i wypchnij zmianę przez PR. Puste zgłoszenie nie dostaje etykiety z formularza, więc po utworzeniu dodaj <code>needs-triage</code> sam w panelu <b>Labels</b> po prawej.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="phase" id="full" data-title="Pełny test">
+      <div class="phase-head"><span class="num">+</span><h2>Pełny test (opcjonalnie)</h2><p>Pozostałe ścieżki fabryki. Przy limicie 1 przechodź je po kolei i zamknij każdy PR, zanim zaczniesz następny scenariusz z agentem.</p></div>
+
+
+      <details class="more">
+        <summary>E. Limit pracy (WIP)</summary>
+        <div class="body">
+          <p style="font-size:.93rem">Załóż naraz zgłoszenia testowe 2 i 6 z części D. Przy pustym zgłoszeniu nr 6 pamiętaj o ręcznym dodaniu <code>needs-triage</code>.</p>
+          <ul class="tasks">
+            <li><label class="task"><input type="checkbox" id="c-f-2"><span class="t"><span class="main">Pierwsze dostaje <code>agent:in-progress</code>, drugie czeka z <code>ready-for-agent</code></span><small>Drugie ruszy po scaleniu lub zamknięciu pierwszego PR, bo dispatch reaguje na zamknięcie PR i uruchamia się też co godzinę.</small></span></label></li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="more">
+        <summary>F. Rework: CI pada na PR agenta</summary>
+        <div class="body">
+          <p style="font-size:.93rem">Na otwartym PR agenta celowo zepsuj lint: dopisz do <code>src/discounts.ts</code> linię <code>const unused = 1;</code>.</p>
+          <div class="code"><span class="lbl">terminal</span><button class="copy" type="button">Kopiuj</button><pre><span class="p">$ </span>gh pr checkout &lt;nr-PR&gt;
+<span class="c"># dopisz w src/discounts.ts:  const unused = 1;</span>
+<span class="p">$ </span>git commit -am "test: celowo psuję lint"
+<span class="p">$ </span>git push</pre></div>
+          <ul class="tasks">
+            <li><label class="task"><input type="checkbox" id="c-f-3"><span class="t"><span class="main">CI pada, CI doctor dodaje <code>needs-rework</code>, rework usuwa błąd i zostawia komentarz <code>factory:rework</code></span><small>Po dwóch nieudanych próbach PR dostaje <code>ready-for-human</code>.</small></span></label></li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="more">
+        <summary>G. Debugowanie: CI pada na main</summary>
+        <div class="body">
+          <div class="note warn"><strong>Na chwilę wyłączasz hamulec.</strong><span><b>Settings → Rules → Rulesets → protect-main → Enforcement status: Disabled</b>, wypchnij commit, a potem <b>od razu</b> przełącz z powrotem na <b>Active</b>.</span></div>
+          <div class="code"><span class="lbl">terminal</span><button class="copy" type="button">Kopiuj</button><pre><span class="p">$ </span>git switch main
+<span class="p">$ </span>git pull
+<span class="c"># src/money.ts, funkcja applyRate: zamień Math.round na Math.floor</span>
+<span class="p">$ </span>git commit -am "fix: round down VAT"
+<span class="p">$ </span>git push</pre></div>
+          <ul class="tasks">
+            <li><label class="task"><input type="checkbox" id="c-f-4"><span class="t"><span class="main">Reguła znów ma status Active</span></span></label></li>
+            <li><label class="task"><input type="checkbox" id="c-f-5"><span class="t"><span class="main">CI doctor założył zgłoszenie z etykietami <code>ci-failure</code> i <code>needs-triage</code></span><small>W treści: krok, pierwszy błąd (<code>expected 58, got 57</code>), podejrzany commit i polecenie do odtworzenia. Dalej zgłoszenie przechodzi zwykłą drogą aż do PR z naprawą.</small></span></label></li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="more">
+        <summary>H. Pomocnik @claude</summary>
+        <div class="body">
+          <ul class="tasks">
+            <li><label class="task"><input type="checkbox" id="c-f-6"><span class="t"><span class="main">Komentarz <code>@claude wyjaśnij, jak działa applyRate i dlaczego zaokrągla od zera</code> w dowolnym zgłoszeniu dostaje odpowiedź bota</span></span></label></li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="more">
+        <summary>I. Zadania okresowe (uruchom ręcznie)</summary>
+        <div class="body">
+          <ul class="tasks">
+            <li><label class="task"><input type="checkbox" id="c-f-7"><span class="t"><span class="main"><b>factory: metrics → Run workflow</b>: powstaje zgłoszenie „Factory metrics” z liczbami z ostatnich 28 dni</span></span></label></li>
+            <li><label class="task"><input type="checkbox" id="c-f-8"><span class="t"><span class="main"><b>factory: maintenance → Run workflow</b> (job: auto): najwyżej jeden mały PR lub zgłoszenie z <code>factory:maintenance</code></span><small>Brak zmian też jest poprawnym wynikiem, jeśli nie ma czego poprawiać.</small></span></label></li>
+            <li><label class="task"><input type="checkbox" id="c-f-9"><span class="t"><span class="main"><b>factory: retro → Run workflow</b>, po kilku scalonych PR-ach agenta: PR z propozycją zmian w standardach</span><small>Taki PR zawsze recenzujesz sam.</small></span></label></li>
+          </ul>
+        </div>
+      </details>
+    </section>
+
+    <section class="phase" id="fix" data-title="Gdy coś nie działa">
+      <div class="phase-head"><span class="num">?</span><h2>Gdy coś nie działa</h2><p>Otwórz nieudany przebieg w zakładce Actions, rozwiń czerwony krok i znajdź pasujący objaw.</p></div>
+      <input class="search" id="q" type="search" placeholder="Szukaj objawu, np. skipped, token, bot…" aria-label="Szukaj objawu">
+      <div class="tbl"><table id="fixes">
+        <thead><tr><th>Objaw</th><th>Przyczyna i naprawa</th></tr></thead>
+        <tbody>
+          <tr><td>Job ma status <b>Skipped</b></td><td><code>FACTORY_ENABLED</code> nie jest dokładnie <code>true</code>. Zdarza się też, że etykieta była inna niż ta, na którą czeka workflow.</td></tr>
+          <tr><td>Błąd w kroku <code>create-github-app-token</code></td><td>Zły <code>FACTORY_APP_ID</code> (np. wpisany Client ID), niepełny klucz <code>.pem</code> albo aplikacja niezainstalowana na tym repo (Install App).</td></tr>
+          <tr><td><code>Resource not accessible by integration</code></td><td>Aplikacji brakuje uprawnień. Popraw je w ustawieniach aplikacji, a potem zaakceptuj nowe uprawnienia w instalacji: <b>Settings → Applications → Installed GitHub Apps → Configure</b>.</td></tr>
+          <tr><td>Akcja odrzuca bota (non-human actor, bot not allowed)</td><td><code>FACTORY_BOT_LOGIN</code> nie zgadza się co do znaku ze slugiem aplikacji z dopiskiem <code>[bot]</code>. Sprawdź adres strony publicznej aplikacji.</td></tr>
+          <tr><td>Akcja odrzuca użytkownika (write permissions)</td><td>Zdarzenie wywołał ktoś bez prawa zapisu w repo. To zamierzone. Przeczytaj zgłoszenie i dodaj etykietę sam.</td></tr>
+          <tr><td>Łańcuch staje po triażu</td><td>Dispatch nie ma wolnego miejsca: w podsumowaniu jest <code>free slots: 0</code>. Zamknij stary PR agenta albo zdejmij zawieszone <code>agent:in-progress</code>.</td></tr>
+          <tr><td>Błąd przy tworzeniu PR lub zgłoszenia przez bota</td><td>Ustawienie „Collaborators only” blokuje aplikację. Przełącz odpowiednią pozycję w <b>Settings → General → Features</b> na <b>All users</b>.</td></tr>
+          <tr><td>Błąd uwierzytelnienia API, brak kredytów</td><td>Sprawdź <code>ANTHROPIC_API_KEY</code>, saldo i limit wydatków w Console.</td></tr>
+          <tr><td>Brak checku <code>check</code> przy ustawianiu reguł</td><td>CI nie przeszło jeszcze ani razu. Wypchnij dowolny commit na <code>main</code> i poczekaj na przebieg CI.</td></tr>
+          <tr><td>Nie mogę scalić własnego PR</td><td>W rulesecie zostało zaznaczone Require review from Code Owners albo Require approval of the most recent reviewable push, albo Required approvals jest większe niż 0. Popraw to w fazie 5.</td></tr>
+          <tr><td>Rework się nie uruchamia</td><td>PR nie ma etykiety <code>agent</code>, pochodzi z forka albo wyczerpał limit 2 prób i dostał <code>ready-for-human</code>.</td></tr>
+          <tr><td>Błąd: akcja musi być przypięta do SHA</td><td>Zaznaczona jest opcja <b>Require actions to be pinned to a full-length commit SHA</b> w <b>Settings → Actions → General</b>. Odznacz ją.</td></tr>
+          <tr><td>Workflow w ogóle się nie pojawia w Actions</td><td>Plik nie trafił na <code>main</code> albo Actions są wyłączone (<b>Settings → Actions → General</b>).</td></tr>
+        </tbody>
+      </table></div>
+      <p id="noFix" hidden style="color:var(--muted)">Nic nie pasuje. Skopiuj log z czerwonego kroku i wklej go w rozmowie.</p>
+    </section>
+
+    <footer>Software Factory Starter · stan na listopad 2026. Nazwy opcji pochodzą z interfejsu GitHuba, który co jakiś czas się zmienia. Jeśli coś wygląda inaczej, szukaj tej samej nazwy na stronie (Ctrl+F).</footer>
+  </main>
+</div>
+
+<script>
+(function () {
+  var LABELS = { "needs-triage": "fbca04", "needs-info": "d4c5f9", "ready-for-agent": "0e8a16", "agent:in-progress": "1d76db", "ready-for-human": "b60205", "wontfix": "ffffff", "agent": "5319e7", "review:passed": "0e8a16", "needs-rework": "e99695", "ci-failure": "b60205", "factory:maintenance": "c5def5", "factory:retro": "c5def5", "factory:metrics": "c5def5" };
+  var KEY = "sf-setup-v1";
+  var state = { checks: {}, fields: {} };
+  try { var raw = localStorage.getItem(KEY); if (raw) state = Object.assign(state, JSON.parse(raw)); } catch (e) {}
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+  function chip(name) {
+    var hex = LABELS[name] || "888888";
+    var s = document.createElement("span");
+    s.className = "lab";
+    s.textContent = name;
+    s.style.background = "#" + hex + "33";
+    s.style.borderColor = "#" + hex;
+    s.style.color = "var(--ink)";
+    return s;
+  }
+  var lw = document.getElementById("labels");
+  Object.keys(LABELS).forEach(function (n) { lw.appendChild(chip(n)); });
+  document.querySelectorAll("[data-labels]").forEach(function (el) {
+    el.getAttribute("data-labels").split(",").forEach(function (n) { el.appendChild(chip(n.trim())); });
+  });
+
+  // personalization
+  var fl = document.getElementById("f-login"), fr = document.getElementById("f-repo"), fa = document.getElementById("f-app");
+  if (state.fields.login) fl.value = state.fields.login;
+  if (state.fields.repo) fr.value = state.fields.repo;
+  if (state.fields.app) fa.value = state.fields.app;
+  var tpls = Array.prototype.map.call(document.querySelectorAll("[data-tpl]"), function (el) { return { el: el, html: el.innerHTML }; });
+  function slugify(s) { return s.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""); }
+  function esc(s) { return s.replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function render() {
+    var login = fl.value.trim() || "twoj-login", repo = fr.value.trim() || "my-factory", app = fa.value.trim() || "my-factory";
+    var slug = slugify(app) || "my-factory";
+    var v = { login: login, repo: repo, app: app, slug: slug, bot: slug + "[bot]", full: login + "/" + repo, url: "https://github.com/" + login + "/" + repo, appurl: "https://github.com/apps/" + slug };
+    document.querySelectorAll("[data-v]").forEach(function (el) { el.textContent = v[el.getAttribute("data-v")]; });
+    tpls.forEach(function (t) { t.el.innerHTML = t.html.replace(/\{(login|repo|app|slug|bot)\}/g, function (_, k) { return esc(v[k]); }); });
+    state.fields = { login: fl.value, repo: fr.value, app: fa.value }; save();
+  }
+  [fl, fr, fa].forEach(function (i) { i.addEventListener("input", render); });
+  render();
+
+  // tabs
+  document.querySelectorAll('[role="tablist"]').forEach(function (list) {
+    var tabs = list.querySelectorAll('[role="tab"]');
+    tabs.forEach(function (t) {
+      t.addEventListener("click", function () {
+        tabs.forEach(function (o) { o.setAttribute("aria-selected", o === t ? "true" : "false"); document.getElementById(o.getAttribute("aria-controls")).hidden = o !== t; });
+      });
+    });
+  });
+
+  // tickets
+  var TICKETS = [
+    { n: 1, tpl: "Bug", where: "main", title: "Kwoty ujemne tracą znak przy formatowaniu",
+      fields: [["Steps to reproduce", true, "formatCents(-50)  // src/money.ts"],
+               ["Expected vs actual", true, 'Expected: formatCents(-50) === "-0.50 PLN"\nActual:   "0.50 PLN"\n\nformatCents(-150) działa poprawnie i zwraca "-1.50 PLN".']],
+      expect: ["ready-for-agent"], then: "potem pełny łańcuch do PR (opis wyżej)" },
+    { n: 2, tpl: "Feature or change", where: "tk-feature", title: "Kody rabatowe bez rozróżniania wielkości liter",
+      fields: [["Goal", true, "Klient może wpisać kod rabatowy (discount code) w dowolnej wielkości liter i ze spacjami na brzegach, a rabat i tak zostanie naliczony."],
+               ["Acceptance criteria", true, '- computeInvoice(lines, "save10") daje te same sumy co computeInvoice(lines, "SAVE10")\n- " Save10 " (spacje na brzegach) też działa\n- nieznany kod, np. "SAVE99", nadal rzuca DiscountError'],
+               ["Out of scope", false, "Nowe kody rabatowe i zmiana wysokości istniejących rabatów."]],
+      expect: ["ready-for-agent"], then: "potem dispatch, implementacja i PR" },
+    { n: 3, tpl: "Feature or change", where: "tk-feature", title: "Obsługa faktur korygujących",
+      fields: [["Goal", true, "Chcemy wystawiać faktury korygujące."],
+               ["Acceptance criteria", true, "Do ustalenia."],
+               ["Out of scope", false, ""]],
+      expect: ["needs-info"], then: "i pytania w komentarzu. Odpowiedz na nie i dodaj needs-triage, a triaż ruszy ponownie" },
+    { n: 4, tpl: "Feature or change", where: "tk-feature", title: "Zaokrąglaj VAT od sumy faktury, a nie od każdej pozycji",
+      fields: [["Goal", true, "VAT ma być liczony raz, od sumy netto całej faktury, zamiast osobno dla każdej pozycji (line VAT)."],
+               ["Acceptance criteria", true, "- faktura z dwiema pozycjami po 250 groszy netto i VAT 23% ma VAT 115 groszy (dziś: 2 × 58 = 116)"],
+               ["Out of scope", false, "Zmiana stawek VAT."]],
+      expect: ["ready-for-human"], then: "bo zmiana zaokrąglania jest sprzeczna z GLOSSARY i ADR 0002 i zmienia sumy istniejących faktur" },
+    { n: 5, tpl: "Feature or change", where: "tk-feature", title: "Pozycje w EUR i PLN na jednej fakturze",
+      fields: [["Goal", true, "Jedna faktura może mieć pozycje w różnych walutach, np. część w EUR, a część w PLN."],
+               ["Acceptance criteria", true, "- faktura z pozycją 100.00 EUR i pozycją 200.00 PLN wylicza sumy w obu walutach"],
+               ["Out of scope", false, "Przeliczanie kursów walut."]],
+      expect: ["wontfix"], then: "z odnośnikiem do .out-of-scope/multi-currency.md" },
+    { n: 6, tpl: "Blank", where: "tk-blank", title: "Przykład użycia CLI w README",
+      fields: [["Opis", false, "Dodaj do README krótką sekcję „Przykład” z poleceniem npm run invoice -- examples/invoice.json i wynikiem, który wypisuje. Poza README nic nie zmieniaj."]],
+      expect: ["ready-for-agent"], then: "po ręcznym dodaniu needs-triage, potem PR ze zmianą w README" }
+  ];
+  function codeBox(text) {
+    var d = document.createElement("div"); d.className = "code sm";
+    var b = document.createElement("button"); b.className = "copy"; b.type = "button"; b.textContent = "Kopiuj";
+    var pre = document.createElement("pre"); pre.textContent = text;
+    d.appendChild(b); d.appendChild(pre); return d;
+  }
+  TICKETS.forEach(function (t) {
+    var host = document.getElementById(t.where === "main" ? "ticket-main" : t.where);
+    var box = document.createElement("div"); box.className = "ticket";
+    var head = document.createElement("div"); head.className = "ticket-head";
+    var nm = document.createElement("span"); nm.className = "nm"; nm.textContent = "Zgłoszenie " + t.n;
+    var tp = document.createElement("span"); tp.className = "tpl"; tp.textContent = "New issue → " + t.tpl;
+    head.appendChild(nm); head.appendChild(tp); box.appendChild(head);
+    var all = [["Title", true, t.title]].concat(t.fields);
+    all.forEach(function (f) {
+      var fld = document.createElement("div"); fld.className = "fld";
+      var l = document.createElement("span"); l.className = "fl"; l.textContent = f[0];
+      if (f[1]) { var em = document.createElement("em"); em.textContent = " *"; l.appendChild(em); }
+      fld.appendChild(l);
+      if (f[2]) { fld.appendChild(codeBox(f[2])); }
+      else { var e = document.createElement("span"); e.style.cssText = "font-size:.88rem;color:var(--muted)"; e.textContent = "zostaw puste"; fld.appendChild(e); }
+      box.appendChild(fld);
+    });
+    var ex = document.createElement("div"); ex.className = "expect";
+    var lab = document.createElement("span"); lab.textContent = "Oczekiwany wynik triażu:"; lab.style.fontWeight = "600";
+    ex.appendChild(lab); t.expect.forEach(function (n) { ex.appendChild(chip(n)); });
+    var th = document.createElement("span"); th.textContent = t.then; th.style.color = "var(--muted)"; ex.appendChild(th);
+    box.appendChild(ex);
+    host.appendChild(box);
+  });
+
+  // copy
+  document.querySelectorAll(".copy").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var pre = b.parentNode.querySelector("pre");
+      var clone = pre.cloneNode(true);
+      clone.querySelectorAll(".p").forEach(function (p) { p.remove(); });
+      var txt = clone.textContent;
+      function done(ok) { b.textContent = ok ? "Skopiowano" : "Zaznaczono, Ctrl+C"; setTimeout(function () { b.textContent = "Kopiuj"; }, 1600); }
+      function fallback() { var r = document.createRange(); r.selectNodeContents(pre); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); done(false); }
+      try { navigator.clipboard.writeText(txt).then(function () { done(true); }, fallback); } catch (e) { fallback(); }
+    });
+  });
+
+  // checklist + progress + toc
+  var phases = document.querySelectorAll("section.phase");
+  var toc = document.getElementById("toc");
+  var tocLinks = [];
+  phases.forEach(function (ph) {
+    if (ph.dataset.sep) { var li0 = document.createElement("li"); li0.className = "eyebrow sep"; li0.textContent = ph.dataset.sep; toc.appendChild(li0); }
+    var li = document.createElement("li");
+    var a = document.createElement("a");
+    a.href = "#" + ph.id;
+    var num = ph.querySelector(".num").textContent;
+    a.innerHTML = '<span class="n"></span><span></span><span class="c"></span>';
+    a.children[0].textContent = num;
+    a.children[1].textContent = ph.dataset.title;
+    li.appendChild(a); toc.appendChild(li);
+    tocLinks.push({ a: a, ph: ph });
+  });
+  var boxes = document.querySelectorAll('.task input[type="checkbox"]');
+  boxes.forEach(function (b) {
+    if (state.checks[b.id]) b.checked = true;
+    b.addEventListener("change", function () { state.checks[b.id] = b.checked; if (!b.checked) delete state.checks[b.id]; save(); progress(); });
+  });
+  function progress() {
+    var core = Array.prototype.filter.call(boxes, function (b) { return !b.closest("#full"); });
+    var done = core.filter(function (b) { return b.checked; }).length;
+    var pct = core.length ? Math.round(done / core.length * 100) : 0;
+    document.getElementById("pct").textContent = pct + "%";
+    document.getElementById("pctbar").style.width = pct + "%";
+    document.getElementById("pctTxt").textContent = done + " z " + core.length + " kroków (bez pełnego testu)";
+    tocLinks.forEach(function (t) {
+      var bs = t.ph.querySelectorAll('.task input[type="checkbox"]');
+      var d = Array.prototype.filter.call(bs, function (b) { return b.checked; }).length;
+      t.a.querySelector(".c").textContent = bs.length ? d + "/" + bs.length : "";
+      t.a.classList.toggle("done", bs.length > 0 && d === bs.length);
+    });
+  }
+  progress();
+  var ask = document.getElementById("resetAsk");
+  document.getElementById("reset").addEventListener("click", function () { ask.hidden = !ask.hidden; });
+  document.getElementById("resetYes").addEventListener("click", function () {
+    boxes.forEach(function (b) { b.checked = false; }); state.checks = {}; save(); progress(); ask.hidden = true;
+  });
+
+  // troubleshooting search
+  var q = document.getElementById("q"), rows = document.querySelectorAll("#fixes tbody tr"), none = document.getElementById("noFix");
+  q.addEventListener("input", function () {
+    var s = q.value.trim().toLowerCase(), shown = 0;
+    rows.forEach(function (r) { var m = !s || r.textContent.toLowerCase().indexOf(s) >= 0; r.hidden = !m; if (m) shown++; });
+    none.hidden = shown > 0;
+  });
+})();
+</script>
+
+</body>
+</html>
